@@ -159,5 +159,37 @@ namespace ns3 {
         return true;
     }
 
+    void FloodWUPDevice::StartTransmission() {
+        NS_LOG_FUNCTION(this);
+
+        NS_ASSERT(m_state != SLEEP); // da idle si passa poi a TX
+        if(m_state == IDLE)
+            m_state = TX;
+    }
+
+    void FloodWUPDevice::NotifyTransmissionEnd(Ptr<const Packet>) {
+        NS_LOG_FUNCTION(this);
+        
+        // da implementare una coda?
+
+        // torniamo IDLE dopo l'invio
+        m_state = IDLE;
+    }
+
+    void FloodWUPDevice::NotifyReceptionStart () {
+        NS_LOG_FUNCTION(this);
+    }
+
+    void FloodWUPDevice::NotifyReceptionEndError () {
+        NS_LOG_FUNCTION(this);
+    }
+
+    void FloodWUPDevice::NotifyReceptionEndOk(Ptr<Packet> packet) {
+        NS_LOG_FUNCTION(this << packet);
+
+        // pacchetto ricevuto, qualche log da mettere
+
+    }
+
 
 }
