@@ -37,6 +37,7 @@ namespace ns3 {
 
         return tid;
     }
+    
 
     FloodWUPDevice::FloodWUPDevice() : m_state (SLEEP) {
         NS_LOG_FUNCTION(this);
@@ -191,5 +192,10 @@ namespace ns3 {
 
     }
 
+    void FloodWUPDevice::SetState(State s) {
+        m_state = s;
+    }
 
+    
+    
 }
