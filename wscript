@@ -10,6 +10,7 @@ def build(bld):
     module = bld.create_ns3_module('flood-wup', ['core'])
     module.source = [
         'model/flood-wup.cc',
+        'model/flood-wup-main.cc'
         'helper/flood-wup-helper.cc',
         ]
 
@@ -27,6 +28,7 @@ def build(bld):
     headers.module = 'flood-wup'
     headers.source = [
         'model/flood-wup.h',
+        'model/flood-wup-main.h',
         'helper/flood-wup-helper.h',
         ]
 
