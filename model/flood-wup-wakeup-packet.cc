@@ -54,7 +54,7 @@ namespace ns3 {
         return m_wakeUpSequence;
     }
 
-    void FloodWUPWakeupPacket::SetWakeUpSequence(Mac8Address wakeUpSequence) const {
+    void FloodWUPWakeupPacket::SetWakeUpSequence(Mac8Address wakeUpSequence) {
         m_wakeUpSequence = wakeUpSequence;
     }
 
