@@ -1,5 +1,5 @@
 //#include "wake-up-radio/model/main-radio-energy-model.h"
-#include "wake-up-radio/model/main-radio-energy-model.h"
+#include "./model/main-radio-energy-model.h"
 #include "ns3/basic-energy-harvester.h"
 #include "ns3/callback.h"
 #include "ns3/device-energy-model.h"
