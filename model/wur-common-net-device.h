@@ -3,6 +3,7 @@
 #include <bits/stdint-uintn.h>
 #include "ns3/net-device.h"
 #include "wur-common-channel.h"
+#include "string.h"
 //#include "wur-common-phy.h"
 namespace ns3 {
 class WurSharedMac;
@@ -15,8 +16,12 @@ class WurCommonNetDevice : public NetDevice {
 	Ptr<WurCommonPhy> m_wurRadioPhy;
 	ReceiveCallback m_rxCb;
 	PromiscReceiveCallback m_promiscRxCb;
+	std::string wakeUpSequence;
 
        public:
+	
+	void SetWakeUpSequence(std::string wakeUp);
+	std::string GetWakeUpSequence();
 	Ptr<WurCommonPhy> GetMainRadioPhy() const;
 	Ptr<WurCommonPhy> GetWurRadioPhy() const;
 	Ptr<WurSharedMac> GetSharedMac() const; 

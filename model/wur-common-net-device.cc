@@ -39,4 +39,12 @@ void WurCommonNetDevice::SetPromiscReceiveCallback(
     PromiscReceiveCallback cb) {
 	m_promiscRxCb = cb;
 }
+void WurCommonNetDevice::SetWakeUpSequence(std::string wakeUpSequence) {
+	wakeUpSequence = wakeUpSequence;
+}
+
+std::string WurCommonNetDevice::GetWakeUpSequence() {
+	return wakeUpSequence;
+}
+
 }  // namespace ns3
