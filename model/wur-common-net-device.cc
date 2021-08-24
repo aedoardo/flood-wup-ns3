@@ -42,7 +42,7 @@ void WurCommonNetDevice::SetPromiscReceiveCallback(
 	m_promiscRxCb = cb;
 }
 void WurCommonNetDevice::SetWakeUpSequence(std::string wakeUpSequence) {
-	NS_LOG_INFO("Setting wake up sequence for device.");
+	NS_LOG_DEBUG("Setting wake up sequence for device.");
 	//std::cout << "Setting wake-up sequence" << std::endl;
 	wakeUpSequence = wakeUpSequence;
 }
