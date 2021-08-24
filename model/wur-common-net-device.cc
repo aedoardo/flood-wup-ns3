@@ -4,6 +4,8 @@
 #include "wur-common-phy.h"
 
 namespace ns3 {
+	NS_LOG_COMPONENT_DEFINE("WurCommonNetDevice");
+	NS_OBJECT_ENSURE_REGISTERED(WurCommonNetDevice);
 void WurCommonNetDevice::SetAddress(Address address) {
 	m_mac->SetAddress(address);
 }
@@ -40,6 +42,8 @@ void WurCommonNetDevice::SetPromiscReceiveCallback(
 	m_promiscRxCb = cb;
 }
 void WurCommonNetDevice::SetWakeUpSequence(std::string wakeUpSequence) {
+	NS_LOG_INFO("Setting wake up sequence for device.");
+	//std::cout << "Setting wake-up sequence" << std::endl;
 	wakeUpSequence = wakeUpSequence;
 }
 
