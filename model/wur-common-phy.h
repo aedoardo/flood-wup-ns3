@@ -18,7 +18,7 @@ class WurCommonPsdu;
 class WurCommonPhy : public Object {
        public:
 	typedef Callback<void, Ptr<Packet> > RxOkCallback;
-	typedef Callback<void, Ptr<Packet> > TxOkCallback;
+	typedef Callback<void, Ptr<Packet> > TxOkCallback; 
 	typedef enum {
 		OFF,
 		IDLE,

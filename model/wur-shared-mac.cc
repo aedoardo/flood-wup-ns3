@@ -24,17 +24,18 @@ Ptr<WurCommonPhy> WurSharedMac::GetWurRadioPhy() const {
 void WurSharedMac::Enqueue(Ptr<Packet> packet, Address to) {
         m_txqueue.push_back(std::make_pair(packet, to));
         NS_LOG_FUNCTION(packet);
-        NS_LOG_INFO("Packets in queueu: " + std::to_string(m_txqueue.size()));
+        NS_LOG_INFO("Packets in queue: " + std::to_string(m_txqueue.size()));
         // if in IDLE state, try send packet immediately
         // TODO: do something else, e.g. invoke a wrapper
         // implemented in a subclass
+
         if (m_state == WurSharedMacState::IDLE) {
                 StartWurTxMechanism();
         }
 }
 
 void WurSharedMac::StartWurTxMechanism() {
-        NS_LOG_FUNCTION("starting wur mechanism");
+        NS_LOG_FUNCTION("Starting WUR transmitting mechanism");
         if (GetWurRadioPhy()->GetState() !=
             WurCommonPhy::WurCommonPhyState::DISABLED) {
                 wurSendingTimer.Schedule(WUR_RX_MECHANISM_TIMEOUT);
@@ -45,7 +46,7 @@ void WurSharedMac::StartWurTxMechanism() {
 }
 
 void WurSharedMac::StartWurRxMechanism() {
-        NS_LOG_FUNCTION_NOARGS();
+        NS_LOG_FUNCTION("Starting WUR receiving mechanism");
         wurReceivingTimer.Schedule(WUR_TX_MECHANISM_TIMEOUT);
         m_state = WurSharedMacState::WUR_RX_MECHANISM;
         // ex. answer to a wur packet
@@ -101,7 +102,7 @@ void WurSharedMac::OnWurTxMechanismSuccess() {
         NS_LOG_FUNCTION_NOARGS();
         if (m_state == WurSharedMacState::WUR_TX_MECHANISM &&
             wurSendingTimer.IsRunning()) {
-                NS_LOG_FUNCTION("wur mechanism success");
+                NS_LOG_FUNCTION("WUR mechanism started successfully");
                 wurSendingTimer.Remove();
                 StartDataTxWrapper();
         }

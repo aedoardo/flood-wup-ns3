@@ -13,6 +13,7 @@ void WurCommonPhyDummyImpl::NotifyRxEnd(Ptr<const WurCommonPpdu>) {}
 void WurCommonPhyDummyImpl::NotifyTxBegin(Ptr<const WurCommonPpdu>, double) {}
 void WurCommonPhyDummyImpl::NotifyTxDrop(Ptr<const WurCommonPpdu>) {}
 void WurCommonPhyDummyImpl::NotifyTxEnd(Ptr<const WurCommonPpdu>) {}
+
 void WurCommonPhyDummyImpl::StartRx(Ptr<WurCommonPpdu> ppdu,
 				    double rxPowerDbm) {
 	NS_LOG_FUNCTION_NOARGS();
@@ -38,15 +39,20 @@ void WurCommonPhyDummyImpl::EndRx(Ptr<WurCommonPpdu> ppdu) {
 void WurCommonPhyDummyImpl::StartTx(Ptr<WurCommonPsdu> psdu) {
 	// assuming upper layer checked if idle
 	NS_LOG_FUNCTION_NOARGS();
+
 	Ptr<WurCommonPpdu> ppdu = Create<WurCommonPpdu>();
 	ppdu->SetPsdu(psdu);
+
+
 	SetTxPacket(ppdu);
         ChangeState(WurCommonPhy::TX);
 	Time delay = Seconds(
 	    (GetTxPacket()->GetPsdu()->GetPayload()->GetSerializedSize()) /
 	    m_dataRate);
+
 	Simulator::Schedule(delay + m_preambleDuration,
 			    &WurCommonPhyDummyImpl::EndTx, this, ppdu);
+
 	GetChannel()->Send(this, ppdu, GetTxPower());
 }
 void WurCommonPhyDummyImpl::EndTx(Ptr<WurCommonPpdu> ppdu) {
