@@ -33,7 +33,7 @@ void WurSharedMac::Enqueue(Ptr<Packet> packet, Address to) {
                 StartWurTxMechanism();
         }
 }
-
+ 
 void WurSharedMac::StartWurTxMechanism() {
         NS_LOG_FUNCTION("Starting WUR transmitting mechanism");
         if (GetWurRadioPhy()->GetState() !=

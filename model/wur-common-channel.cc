@@ -48,6 +48,7 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 	NS_LOG_FUNCTION(this << sender << ppdu << txPowerDbm);
 	Ptr<MobilityModel> senderMobility = sender->GetMobility();
 	NS_ASSERT(senderMobility != 0);
+
 	for (PhyList::const_iterator i = m_phyList.begin();
 	     i != m_phyList.end(); i++) {
 		if (sender != (*i)) {
@@ -57,7 +58,7 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 			//    sender->GetChannelNumber()) {
 			//        continue;
 			//}
-			NS_LOG_INFO("found a phy");
+			NS_LOG_INFO("Found a PHY");
 			Ptr<MobilityModel> receiverMobility =
 			    (*i)->GetMobility()->GetObject<MobilityModel>();
 			// valid only for speed << c :)
@@ -74,12 +75,14 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 			    << "m, delay=" << delay);
 			Ptr<WurCommonPpdu> copy = Copy(ppdu);
 			Ptr<NetDevice> dstNetDevice = (*i)->GetDevice();
+
 			uint32_t dstNode;
 			if (dstNetDevice == 0) {
 				dstNode = 0xffffffff;
 			} else {
 				dstNode = dstNetDevice->GetNode()->GetId();
 			}
+
 
 			Simulator::ScheduleWithContext(
 			    dstNode, delay, &WurCommonChannel::Receive, 

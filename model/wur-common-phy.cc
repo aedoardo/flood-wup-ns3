@@ -11,6 +11,7 @@ NS_LOG_COMPONENT_DEFINE("WurCommonPhy");
 Ptr<WurCommonChannel> WurCommonPhy::GetChannel() const { return m_channel; }
 Ptr<MobilityModel> WurCommonPhy::GetMobility() const { return m_mobility; }
 Ptr<WurCommonNetDevice> WurCommonPhy::GetDevice() const { return m_netDevice; }
+
 void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                         double rxPowerDbm) {
         NS_LOG_FUNCTION(this << rxPowerDbm);
@@ -32,7 +33,7 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         NotifyRxDrop(ppdu, "Already in Tx");
                         break;
                 case WurCommonPhyState::IDLE:
-                        NS_LOG_INFO("start rx");
+                        NS_LOG_INFO("Start receiving");
                         ChangeState(WurCommonPhyState::RX);
                         SetRxPacket(ppdu);
                         Simulator::Schedule(m_preambleDuration,
@@ -88,7 +89,7 @@ void WurCommonPhy::SetEnergyModelCallback(
     DeviceEnergyModel::ChangeStateCallback cb) {
         m_energyModelCallback = cb;
 }
-
+ 
 void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         NS_LOG_FUNCTION(state);
         //can't set disabled state with ChangeState, must be manually done in the depletion handler

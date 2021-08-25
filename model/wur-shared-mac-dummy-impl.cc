@@ -6,6 +6,9 @@
 #include "wur-common-net-device.h"
 #include "wur-common-phy.h"
 #include "wur-common-psdu.h"
+#include <string>
+#include <iostream>
+#include <sstream>
 
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMacDummyImpl");
@@ -17,24 +20,20 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	NS_LOG_FUNCTION_NOARGS();
 	Ptr<Packet> wurPacket = Create<Packet>();
 
-
 	WurSharedMacDummyImplHeader header;
 	header.SetFrom(GetAddress());
 	header.SetTo(std::get<1>(m_txqueue.front()));
-	header.SetPacketType(WurPacketType::WakeUpPacket); // setuppiamo il wake up packet
-	header.SetHeaderWakeUpSequence("WAKEUP"); // la sequenza che gli passiamo
+	header.SetPacketType(WurPacketType::WakeUpPacket);
+	header.SetHeaderWakeUpSequence("567891");
 	wurPacket->AddHeader(header);
-
 
 	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 	psdu->SetPayload(wurPacket);
 	NS_LOG_FUNCTION(this << "WUR phy state" << GetWurRadioPhy()->GetState());
 	
+
 	if(GetWurRadioPhy()->GetState() == WurCommonPhy::WurCommonPhyState::IDLE) {
-		if(header.GetPacketType() == WurPacketType::WakeUpPacket)
-			NS_LOG_FUNCTION(this << "Sending WUR sequence packet with sequence: " + header.GetWakeUpSequenceHeader());
-		else
-			NS_LOG_FUNCTION(this << "Sending WUR data packet.");
+		NS_LOG_FUNCTION(this << "Sending WUR data packet.");
 
 		GetWurRadioPhy()->StartTx(psdu);
 		//waiting for TX ending
@@ -63,18 +62,19 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
 	WurSharedMacDummyImplHeader header;
-
 	packet->RemoveHeader(header);
-	header.Print(std::cout);
-	std::cout << header.GetWakeUpSequenceHeader() << std::endl;
+	
+	
 	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		//if IDLE, start wur rx mechanism
 		if(m_state  == WurSharedMac::WurSharedMacState::IDLE) {
+			
 			if(header.GetPacketType() == WurPacketType::WakeUpPacket)
-				NS_LOG_FUNCTION("Received WUR wake-up packet with sequence: " + header.GetWakeUpSequenceHeader());
+				NS_LOG_FUNCTION("Received WUR packet with sequence: " + header.GetWakeUpSequenceHeader());
 			else
-				NS_LOG_FUNCTION("Received WUR packet for me " << header.GetTo());
-
+				NS_LOG_FUNCTION("Received WUR packet data.");
+			
+			//NS_LOG_FUNCTION("Received WUR packet for me " << header.GetTo());
 			StartWurRxMechanism();
 		}
 			
@@ -86,9 +86,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 	// check if phy is available
 	if (GetMainRadioPhy()->GetState() ==
 	    WurCommonPhy::WurCommonPhyState::IDLE) {
-		//create packet
 		Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
-		//create header
 		WurSharedMacDummyImplHeader header;
 		std::pair<Ptr<Packet>,Address> item;
 		item = m_txqueue.front();
@@ -123,7 +121,7 @@ TypeId WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetInstanceTypeId()
 
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetSerializedSize()
     const {
-	return sizeof(uint8_t) * 2;
+	return sizeof(uint8_t) * 3 + sizeof(uint64_t) * 1;
 };
 
 void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
@@ -133,12 +131,21 @@ void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
 	start.WriteU8(temp);
 	m_to.CopyTo(&temp);
 	start.WriteU8(temp);
+	if(m_type == WurPacketType::WakeUpPacket) {
+		start.WriteU8(0);
+		start.WriteU64(atoi(m_seq.c_str()));
+	} else {
+		start.WriteU8(1);
+		start.WriteU64(0);
+	}
 }
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Deserialize(
     Buffer::Iterator start) {
 	Buffer::Iterator i = start;
 	m_from = Mac8Address(i.ReadU8());
 	m_to = Mac8Address(i.ReadU8());
+	m_type = (WurPacketType) i.ReadU8();
+	m_seq = std::to_string(i.ReadU64());
 	return i.GetDistanceFrom(start);
 }
 

@@ -36,13 +36,12 @@ void WurCommonPhyDummyImpl::EndRx(Ptr<WurCommonPpdu> ppdu) {
         ChangeState(WurCommonPhy::IDLE);
 	m_rxOkCallback(ppdu->GetPsdu()->GetPayload());
 }
-void WurCommonPhyDummyImpl::StartTx(Ptr<WurCommonPsdu> psdu) {
+void WurCommonPhyDummyImpl::StartTx(Ptr<WurCommonPsdu> psdu) { 
 	// assuming upper layer checked if idle
-	NS_LOG_FUNCTION_NOARGS();
+	NS_LOG_FUNCTION_NOARGS(); 
 
 	Ptr<WurCommonPpdu> ppdu = Create<WurCommonPpdu>();
 	ppdu->SetPsdu(psdu);
-
 
 	SetTxPacket(ppdu);
         ChangeState(WurCommonPhy::TX);
