@@ -41,13 +41,13 @@ void WurCommonNetDevice::SetPromiscReceiveCallback(
     PromiscReceiveCallback cb) {
 	m_promiscRxCb = cb;
 }
-void WurCommonNetDevice::SetWakeUpSequence(std::string wakeUpSequence) {
+void WurCommonNetDevice::SetWakeUpSequence(Mac16Address wakeUpSequence) {
 	NS_LOG_DEBUG("Setting "<< wakeUpSequence <<" as wake up sequence for device.");
 	//std::cout << "Setting wake-up sequence" << std::endl;
 	wakeUpSequence = wakeUpSequence;
 }
 
-std::string WurCommonNetDevice::GetWakeUpSequence() {
+Mac16Address WurCommonNetDevice::GetWakeUpSequence() {
 	return wakeUpSequence;
 }
 

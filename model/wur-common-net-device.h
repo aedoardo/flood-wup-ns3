@@ -4,6 +4,7 @@
 #include "ns3/net-device.h"
 #include "wur-common-channel.h"
 #include "string.h"
+#include "ns3/mac16-address.h"
 //#include "wur-common-phy.h"
 namespace ns3 {
 class WurSharedMac;
@@ -16,12 +17,12 @@ class WurCommonNetDevice : public NetDevice {
 	Ptr<WurCommonPhy> m_wurRadioPhy;
 	ReceiveCallback m_rxCb;
 	PromiscReceiveCallback m_promiscRxCb;
-	std::string wakeUpSequence;
+	Mac16Address wakeUpSequence;
 
        public:
 	
-	void SetWakeUpSequence(std::string wakeUp);
-	std::string GetWakeUpSequence();
+	void SetWakeUpSequence(Mac16Address wakeUp);
+	Mac16Address GetWakeUpSequence();
 	Ptr<WurCommonPhy> GetMainRadioPhy() const;
 	Ptr<WurCommonPhy> GetWurRadioPhy() const;
 	Ptr<WurSharedMac> GetSharedMac() const; 

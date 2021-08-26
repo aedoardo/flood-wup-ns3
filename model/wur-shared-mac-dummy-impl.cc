@@ -42,8 +42,6 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	
 
 	if(GetWurRadioPhy()->GetState() == WurCommonPhy::WurCommonPhyState::IDLE) {
-		NS_LOG_FUNCTION(this << "Sending WUR data packet.");
-
 		GetWurRadioPhy()->StartTx(psdu);
 		//waiting for TX ending
 	}
@@ -74,6 +72,7 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	packet->RemoveHeader(header);
 	
 	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());
+
 	
 	/*if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		//if IDLE, start wur rx mechanism

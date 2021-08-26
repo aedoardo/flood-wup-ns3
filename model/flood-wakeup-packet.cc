@@ -43,8 +43,6 @@ namespace ns3 {
     uint32_t FloodWUPPacketHeader::Deserialize(Buffer::Iterator start) {
         Buffer::Iterator i = start;
         ReadFrom(i, wakeUpSequence);
-
-        NS_LOG_DEBUG("Length remaining: " + i.GetDistanceFrom(start));
         return i.GetDistanceFrom(start);
     }
 
