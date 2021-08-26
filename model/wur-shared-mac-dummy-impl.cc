@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <sstream>
+#include "flood-wakeup-packet.h"
 
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMacDummyImpl");
@@ -20,7 +21,7 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	NS_LOG_FUNCTION_NOARGS();
 	Ptr<Packet> wurPacket = Create<Packet>();
 
-	WurSharedMacDummyImplHeader header;
+	/*WurSharedMacDummyImplHeader header;
 	header.SetFrom(GetAddress());
 	header.SetTo(std::get<1>(m_txqueue.front()));
 	header.SetPacketType(WurPacketType::WakeUpPacket);
@@ -28,7 +29,15 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	wurPacket->AddHeader(header);
 
 	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
+	psdu->SetPayload(wurPacket);*/
+
+	// Testing the new WakeUP packet.
+	FloodWUPPacketHeader header;
+	header.SetHeaderWakeUpSequence(Mac16Address("00:01"));
+	wurPacket->AddHeader(header);
+	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 	psdu->SetPayload(wurPacket);
+
 	NS_LOG_FUNCTION(this << "WUR phy state" << GetWurRadioPhy()->GetState());
 	
 
@@ -64,8 +73,9 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	WurSharedMacDummyImplHeader header;
 	packet->RemoveHeader(header);
 	
+	NS_LOG_DEBUG("Received WakeUp Sequence: " + header.GetWakeUpSequenceHeader());
 	
-	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
+	/*if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		//if IDLE, start wur rx mechanism
 		if(m_state  == WurSharedMac::WurSharedMacState::IDLE) {
 			
@@ -78,7 +88,7 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 			StartWurRxMechanism();
 		}
 			
-	}	
+	}	*/
 }
 void WurSharedMacDummyImpl::StartDataTx() {
 	NS_LOG_FUNCTION_NOARGS();

@@ -5,15 +5,25 @@
 #include "ns3/address-utils.h"
 
 namespace ns3 {
-    NS_LOG_COMPONENT_DEFINE("FloodWUPPacket");
+    NS_LOG_COMPONENT_DEFINE("FloodWUPPacketHeader");
+    NS_OBJECT_ENSURE_REGISTERED(FloodWUPPacketHeader);
+
 
     TypeId FloodWUPPacketHeader::GetTypeId(void) {
         static TypeId tid = 
-            TypeId("ns3:FloodWUPPacket")
+            TypeId("ns3:FloodWUPPacketHeader")
             .SetParent<Chunk>()
             .SetGroupName("Wur");
 
         return tid;
+    }
+
+    FloodWUPPacketHeader::FloodWUPPacketHeader() {
+
+    }
+
+    FloodWUPPacketHeader::~FloodWUPPacketHeader() {
+
     }
 
     TypeId FloodWUPPacketHeader::GetInstanceTypeId() const {
@@ -32,6 +42,12 @@ namespace ns3 {
     uint32_t FloodWUPPacketHeader::Deserialize(Buffer::Iterator start) {
         Buffer::Iterator i = start;
         ReadFrom(i, wakeUpSequence);
+
+        return GetSerializedSize();
+    }
+
+    void FloodWUPPacketHeader::Print(std::ostream &os) const {
+	    os << wakeUpSequence;
     }
 
 }

@@ -22,7 +22,7 @@ class WurSharedMacDummyImpl : public WurSharedMac {
         typedef enum {
            WakeUpPacket,
            DataPacket
-        } WurPacketType; 
+        } WurPacketType;
 
         class WurSharedMacDummyImplHeader : public Header {
                 using Chunk::Deserialize;

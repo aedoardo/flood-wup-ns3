@@ -6,10 +6,11 @@
 
 namespace ns3 {
     class FloodWUPPacketHeader : public Header {
+        using Chunk::Deserialize;
  
         public:
-            FloodWUPPacketHeader() {};
-            virtual ~FloodWUPPacketHeader() {};
+            FloodWUPPacketHeader();
+            virtual ~FloodWUPPacketHeader();
             static TypeId GetTypeId(void);
             virtual TypeId GetInstanceTypeId(void) const;
             virtual uint32_t GetSerializedSize(void) const;

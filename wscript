@@ -22,6 +22,7 @@ def build(bld):
         'model/radio-energy-model.cc',
         'model/main-radio-energy-model.cc',
         'model/wur-radio-energy-model.cc',
+        'model/flood-wakeup-packet.cc'
         ]
 
     module_test = bld.create_ns3_module_test_library('wake-up-radio')
@@ -50,6 +51,7 @@ def build(bld):
         'model/radio-energy-model.h',
         'model/main-radio-energy-model.h',
         'model/wur-radio-energy-model.h',
+        'model/flood-wakeup-packet.h'
        ]
 
     if bld.env.ENABLE_EXAMPLES:
