@@ -6,7 +6,7 @@
 
 namespace ns3 {
     class FloodWUPPacketHeader : public Header {
-
+ 
         public:
             FloodWUPPacketHeader() {};
             virtual ~FloodWUPPacketHeader() {};
@@ -20,8 +20,8 @@ namespace ns3 {
                 wakeUpSequence = seq;
             };
             Mac16Address GetWakeUpSequence() {
-                return wakeUpSequence
-            };
+                return wakeUpSequence;
+            }
 
         private:
             Mac16Address wakeUpSequence;
