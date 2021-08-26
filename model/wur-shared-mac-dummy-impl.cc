@@ -70,10 +70,10 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 //to be set as rxOkCallback in wur phy
 void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
-	WurSharedMacDummyImplHeader header;
+	FloodWUPPacketHeader header;
 	packet->RemoveHeader(header);
 	
-	NS_LOG_DEBUG("Received WakeUp Sequence: " + header.GetWakeUpSequenceHeader());
+	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());
 	
 	/*if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		//if IDLE, start wur rx mechanism

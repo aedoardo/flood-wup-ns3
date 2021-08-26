@@ -35,6 +35,7 @@ namespace ns3 {
     }
 
     void FloodWUPPacketHeader::Serialize(Buffer::Iterator start) const {
+        NS_LOG_DEBUG("Serializing wakeup packet.");
         Buffer::Iterator i = start;
         WriteTo(i, wakeUpSequence);
     }
@@ -43,7 +44,8 @@ namespace ns3 {
         Buffer::Iterator i = start;
         ReadFrom(i, wakeUpSequence);
 
-        return GetSerializedSize();
+        NS_LOG_DEBUG("Length remaining: " + i.GetDistanceFrom(start));
+        return i.GetDistanceFrom(start);
     }
 
     void FloodWUPPacketHeader::Print(std::ostream &os) const {
