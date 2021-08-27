@@ -6,6 +6,7 @@
 #include "wur-common-channel.h"
 #include "wur-common-net-device.h"
 #include "wur-common-ppdu.h"
+#include "flood-wakeup-packet.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurCommonPhy");
 Ptr<WurCommonChannel> WurCommonPhy::GetChannel() const { return m_channel; }
@@ -15,6 +16,8 @@ Ptr<WurCommonNetDevice> WurCommonPhy::GetDevice() const { return m_netDevice; }
 void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                         double rxPowerDbm) {
         NS_LOG_FUNCTION(this << rxPowerDbm);
+        
+        FloodWUPPacketHeader header;
         if (ppdu->IsTruncatedTx()) {
                 NS_LOG_DEBUG(
                     "Packet reception stopped because transmitter has been "
@@ -34,11 +37,17 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         break;
                 case WurCommonPhyState::IDLE:
                         NS_LOG_INFO("Start receiving");
-                        ChangeState(WurCommonPhyState::RX);
-                        SetRxPacket(ppdu);
-                        Simulator::Schedule(m_preambleDuration,
-                                            &WurCommonPhy::StartRx, this, ppdu,
-                                            rxPowerDbm);
+                        ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
+                        NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
+                        if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
+                            
+                            NS_LOG_INFO("Changing current state to receiving state.");
+                            ChangeState(WurCommonPhyState::RX);
+                            SetRxPacket(ppdu);
+                            Simulator::Schedule(m_preambleDuration,
+                                &WurCommonPhy::StartRx, this, ppdu,
+                                rxPowerDbm);
+                        }
                         break;
                 case WurCommonPhyState::OFF:
                         NS_LOG_DEBUG("Drop packet because in sleep mode");
@@ -56,6 +65,7 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
 
 void WurCommonPhy::TurnOn() {
         NS_LOG_FUNCTION_NOARGS();
+
         if (m_state == WurCommonPhyState::OFF) {
                 ChangeState(WurCommonPhyState::IDLE);
         }
@@ -63,6 +73,7 @@ void WurCommonPhy::TurnOn() {
 
 void WurCommonPhy::TurnOff() {
         NS_LOG_FUNCTION_NOARGS();
+
         if (m_state != WurCommonPhyState::OFF && m_state != WurCommonPhyState::DISABLED) {
                 ChangeState(WurCommonPhyState::OFF);
                 if (m_rxPacket != nullptr) m_rxPacket->SetTruncatedRx();
@@ -92,6 +103,7 @@ void WurCommonPhy::SetEnergyModelCallback(
  
 void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         NS_LOG_FUNCTION(state);
+        NS_LOG_DEBUG("Change device state with wake-up sequence " << m_netDevice->GetWakeUpSequence() << " to " << state);
         //can't set disabled state with ChangeState, must be manually done in the depletion handler
         NS_ASSERT(state != DISABLED);
         if (!m_energyModelCallback.IsNull()) m_energyModelCallback(state);

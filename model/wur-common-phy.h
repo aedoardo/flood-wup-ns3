@@ -81,6 +81,7 @@ class WurCommonPhy : public Object {
 	void SetRxPacket(Ptr<WurCommonPpdu> rxPacket) {
 		m_rxPacket = rxPacket;
 	}
+	
 	void SetTxPacket(Ptr<WurCommonPpdu> txPacket) {
 		m_txPacket = txPacket;
 	}

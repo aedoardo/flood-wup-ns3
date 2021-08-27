@@ -108,6 +108,7 @@ void WurCommonChannel::Receive(Ptr<WurCommonPhy> receiver,
 	}
 	NS_LOG_INFO("invoking preamble reception");
 	NS_LOG_INFO("sensitiviy " << receiver->GetRxSensitivity());
+
 	receiver->StartReceivePreamble(ppdu,
 				       rxPowerDbm + receiver->GetRxGain());
 }

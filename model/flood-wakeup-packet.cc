@@ -35,7 +35,7 @@ namespace ns3 {
     }
 
     void FloodWUPPacketHeader::Serialize(Buffer::Iterator start) const {
-        NS_LOG_DEBUG("Serializing wakeup packet.");
+        NS_LOG_DEBUG("Serializing wakeup packet with sequence: " << wakeUpSequence);
         Buffer::Iterator i = start;
         WriteTo(i, wakeUpSequence);
     }
