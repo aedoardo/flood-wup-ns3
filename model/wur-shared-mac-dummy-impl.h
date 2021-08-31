@@ -38,7 +38,6 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                         m_from = Mac8Address::ConvertFrom(from);
                 }
                 void SetTo(Address to) { m_to = Mac8Address::ConvertFrom(to); }
-                std::string GetWakeUpSequenceHeader() { return m_seq; }
                 Mac8Address GetFrom() { return m_from; }
                 Mac8Address GetTo() { return m_to; }
 
