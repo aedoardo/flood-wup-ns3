@@ -110,7 +110,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		NS_LOG_FUNCTION("Starting transmitting packet");
 		GetMainRadioPhy()->StartTx(psdu);
 
-		
+
 	}
 }
 void WurSharedMacDummyImpl::StartDataRx() { 
@@ -144,21 +144,12 @@ void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
 	start.WriteU8(temp);
 	m_to.CopyTo(&temp);
 	start.WriteU8(temp);
-	if(m_type == WurPacketType::WakeUpPacket) {
-		start.WriteU8(0);
-		start.WriteU64(atoi(m_seq.c_str()));
-	} else {
-		start.WriteU8(1);
-		start.WriteU64(0);
-	}
 }
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Deserialize(
     Buffer::Iterator start) {
 	Buffer::Iterator i = start;
 	m_from = Mac8Address(i.ReadU8());
 	m_to = Mac8Address(i.ReadU8());
-	m_type = (WurPacketType) i.ReadU8();
-	m_seq = std::to_string(i.ReadU64());
 	return i.GetDistanceFrom(start);
 }
 

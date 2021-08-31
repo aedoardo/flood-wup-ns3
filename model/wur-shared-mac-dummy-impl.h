@@ -45,7 +45,6 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                private:
                 Mac8Address m_from;
                 Mac8Address m_to;
-                std::string m_seq;
         };
 
        private:
