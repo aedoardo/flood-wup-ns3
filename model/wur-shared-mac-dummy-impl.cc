@@ -95,6 +95,8 @@ void WurSharedMacDummyImpl::StartDataTx() {
 	// check if phy is available
 	if (GetMainRadioPhy()->GetState() ==
 	    WurCommonPhy::WurCommonPhyState::IDLE) {
+
+
 		Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 		WurSharedMacDummyImplHeader header;
 		std::pair<Ptr<Packet>,Address> item;
@@ -107,6 +109,8 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		m_txqueue.erase(m_txqueue.begin());
 		NS_LOG_FUNCTION("Starting transmitting packet");
 		GetMainRadioPhy()->StartTx(psdu);
+
+		
 	}
 }
 void WurSharedMacDummyImpl::StartDataRx() { 

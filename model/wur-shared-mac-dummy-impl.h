@@ -19,10 +19,6 @@ class WurSharedMacDummyImpl : public WurSharedMac {
         void StartDataRx();
         void SetPromisc(void);
         static TypeId GetTypeId(); 
-        typedef enum {
-           WakeUpPacket,
-           DataPacket
-        } WurPacketType;
 
         class WurSharedMacDummyImplHeader : public Header {
                 using Chunk::Deserialize;
@@ -42,9 +38,6 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                         m_from = Mac8Address::ConvertFrom(from);
                 }
                 void SetTo(Address to) { m_to = Mac8Address::ConvertFrom(to); }
-                void SetPacketType(WurPacketType type) { m_type = type; }
-                void SetHeaderWakeUpSequence(std::string seq) { m_seq = seq; }
-                WurPacketType GetPacketType() { return m_type; }
                 std::string GetWakeUpSequenceHeader() { return m_seq; }
                 Mac8Address GetFrom() { return m_from; }
                 Mac8Address GetTo() { return m_to; }
@@ -52,7 +45,6 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                private:
                 Mac8Address m_from;
                 Mac8Address m_to;
-                WurPacketType m_type;
                 std::string m_seq;
         };
 
