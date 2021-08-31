@@ -36,12 +36,11 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         NotifyRxDrop(ppdu, "Already in Tx");
                         break;
                 case WurCommonPhyState::IDLE:
+
                         NS_LOG_INFO("Start receiving");
                         ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
                         NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
                         if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
-                            
-                            NS_LOG_INFO("Changing current state to receiving state.");
                             ChangeState(WurCommonPhyState::RX);
                             SetRxPacket(ppdu);
                             Simulator::Schedule(m_preambleDuration,
@@ -103,7 +102,7 @@ void WurCommonPhy::SetEnergyModelCallback(
  
 void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         NS_LOG_FUNCTION(state);
-        NS_LOG_DEBUG("Change device state with wake-up sequence " << m_netDevice->GetWakeUpSequence() << " to " << state);
+        //NS_LOG_DEBUG("Change device state with wake-up sequence " << m_netDevice->GetWakeUpSequence() << " to " << state);
         //can't set disabled state with ChangeState, must be manually done in the depletion handler
         NS_ASSERT(state != DISABLED);
         if (!m_energyModelCallback.IsNull()) m_energyModelCallback(state);
@@ -111,6 +110,15 @@ void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         //Hence, I only set new state if I wasn't disabled
         if(m_state != DISABLED)
                 m_state = state;
+        
+        if(state == WurCommonPhyState::RX) {
+            // accendiamo la MAIN ANTENNA
+            if(m_netDevice->GetMainRadioPhy()->m_state != WurCommonPhyState::RX) {
+                NS_LOG_DEBUG("Waking up MAIN RADIO");
+                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
+                NS_LOG_DEBUG("Device ready to receive data packets.");
+            }
+        }      
         NS_LOG_FUNCTION("Final state" << m_state);
 }
 
