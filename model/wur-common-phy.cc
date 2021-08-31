@@ -1,5 +1,5 @@
 #include "wur-common-phy.h"
-
+#include "src/wifi/model/wifi-utils.h"
 #include "ns3/device-energy-model.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
@@ -7,6 +7,7 @@
 #include "wur-common-net-device.h"
 #include "wur-common-ppdu.h"
 #include "flood-wakeup-packet.h"
+#include "ns3/header.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurCommonPhy");
 Ptr<WurCommonChannel> WurCommonPhy::GetChannel() const { return m_channel; }
@@ -15,7 +16,9 @@ Ptr<WurCommonNetDevice> WurCommonPhy::GetDevice() const { return m_netDevice; }
 
 void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                         double rxPowerDbm) {
-        NS_LOG_FUNCTION(this << rxPowerDbm);
+        //NS_LOG_FUNCTION(this << rxPowerDbm);
+        NS_LOG_DEBUG("Packet size received: " << ppdu->GetPsdu()->GetPayload()->GetSize());
+        NS_LOG_DEBUG("Packet type received: " << ppdu->GetPsdu()->GetPacketType());
         
         FloodWUPPacketHeader header;
         if (ppdu->IsTruncatedTx()) {
@@ -28,6 +31,9 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                 case WurCommonPhyState::RX:
                         NS_LOG_DEBUG("Drop packet because already in Rx (power="
                                      << rxPowerDbm << "dBm)");
+
+                        
+                        NS_LOG_DEBUG("Device with wake up sequence " << m_netDevice->GetWakeUpSequence() << " busy.");
                         NotifyRxDrop(ppdu, "Already receiving packet");
                         break;
                 case WurCommonPhyState::TX:
@@ -38,14 +44,22 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                 case WurCommonPhyState::IDLE:
 
                         NS_LOG_INFO("Start receiving");
-                        ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
-                        NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
-                        if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
-                            ChangeState(WurCommonPhyState::RX);
-                            SetRxPacket(ppdu);
-                            Simulator::Schedule(m_preambleDuration,
-                                &WurCommonPhy::StartRx, this, ppdu,
-                                rxPowerDbm);
+                        if(ppdu->GetPsdu()->GetPacketType() == "wus") {
+                                ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
+                                NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
+                                if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
+                                ChangeState(WurCommonPhyState::RX);
+                                SetRxPacket(ppdu);
+                                Simulator::Schedule(m_preambleDuration,
+                                        &WurCommonPhy::StartRx, this, ppdu,
+                                        rxPowerDbm);
+                                }
+                        } else {
+                                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
+                                SetRxPacket(ppdu);
+                                Simulator::Schedule(m_preambleDuration,
+                                        &WurCommonPhy::StartRx, this, ppdu,
+                                        rxPowerDbm);
                         }
                         break;
                 case WurCommonPhyState::OFF:
@@ -68,6 +82,7 @@ void WurCommonPhy::TurnOn() {
         if (m_state == WurCommonPhyState::OFF) {
                 ChangeState(WurCommonPhyState::IDLE);
         }
+
 }
 
 void WurCommonPhy::TurnOff() {
@@ -113,13 +128,13 @@ void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         
         if(state == WurCommonPhyState::RX) {
             // accendiamo la MAIN ANTENNA
-            if(m_netDevice->GetMainRadioPhy()->m_state != WurCommonPhyState::RX) {
-                NS_LOG_DEBUG("Waking up MAIN RADIO");
-                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
-                NS_LOG_DEBUG("Device ready to receive data packets.");
+            if(m_netDevice->GetMainRadioPhy()->m_state == WurCommonPhyState::OFF) {
+                NS_LOG_DEBUG("Waking up main radio \n");
+                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::IDLE);
+                NS_LOG_DEBUG("Device ready to receive data packets. \n");
             }
         }      
-        NS_LOG_FUNCTION("Final state" << m_state);
+        NS_LOG_DEBUG("Final state " << m_state << " device with wus: " << m_netDevice->GetWakeUpSequence() << "\n");
 }
 
 /**

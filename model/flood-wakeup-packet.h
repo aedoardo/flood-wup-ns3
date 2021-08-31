@@ -23,9 +23,11 @@ namespace ns3 {
             Mac16Address GetWakeUpSequence() {
                 return wakeUpSequence;
             }
+            std::string GetPacketType() {return m_seq; };
 
         private:
             Mac16Address wakeUpSequence;
+            std::string m_seq = "wus";
     };
 }
 

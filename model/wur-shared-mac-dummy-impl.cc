@@ -17,19 +17,10 @@ void WurSharedMacDummyImpl::SetAddress(Address address) {
 	m_address = Mac8Address::ConvertFrom(address);
 }
 Address WurSharedMacDummyImpl::GetAddress() const { return m_address; }
+
 void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	NS_LOG_FUNCTION_NOARGS();
 	Ptr<Packet> wurPacket = Create<Packet>();
-
-	/*WurSharedMacDummyImplHeader header;
-	header.SetFrom(GetAddress());
-	header.SetTo(std::get<1>(m_txqueue.front()));
-	header.SetPacketType(WurPacketType::WakeUpPacket);
-	header.SetHeaderWakeUpSequence("567891");
-	wurPacket->AddHeader(header);
-
-	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
-	psdu->SetPayload(wurPacket);*/
 
 	// Testing the new WakeUP packet.
 	FloodWUPPacketHeader header;
@@ -37,6 +28,7 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	wurPacket->AddHeader(header);
 	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 	psdu->SetPayload(wurPacket);
+	psdu->SetType("wus");
 
 	NS_LOG_FUNCTION(this << "WUR phy state" << GetWurRadioPhy()->GetState());
 	
@@ -60,6 +52,9 @@ void WurSharedMacDummyImpl::StartWurRxMechanismImpl() {
 void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 	// TODO: print packet
 	NS_LOG_FUNCTION_NOARGS();
+	NS_LOG_DEBUG("Receiving data packet");
+
+
 	WurSharedMacDummyImplHeader header;
        	packet->PeekHeader(header);	
 	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo());
@@ -96,7 +91,6 @@ void WurSharedMacDummyImpl::StartDataTx() {
 	if (GetMainRadioPhy()->GetState() ==
 	    WurCommonPhy::WurCommonPhyState::IDLE) {
 
-
 		Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 		WurSharedMacDummyImplHeader header;
 		std::pair<Ptr<Packet>,Address> item;
@@ -106,6 +100,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
 		psdu->SetPayload(payload);
+		psdu->SetType("data");
 		m_txqueue.erase(m_txqueue.begin());
 		NS_LOG_FUNCTION("Starting transmitting packet");
 		GetMainRadioPhy()->StartTx(psdu);

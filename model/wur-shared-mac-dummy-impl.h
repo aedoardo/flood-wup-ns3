@@ -40,10 +40,12 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                 void SetTo(Address to) { m_to = Mac8Address::ConvertFrom(to); }
                 Mac8Address GetFrom() { return m_from; }
                 Mac8Address GetTo() { return m_to; }
+                std::string GetPacketType() { return m_seq; };
 
                private:
                 Mac8Address m_from;
                 Mac8Address m_to;
+                std::string m_seq = "data";
         };
 
        private:
