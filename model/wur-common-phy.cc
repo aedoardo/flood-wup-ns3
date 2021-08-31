@@ -1,5 +1,4 @@
 #include "wur-common-phy.h"
-#include "src/wifi/model/wifi-utils.h"
 #include "ns3/device-energy-model.h"
 #include "ns3/log.h"
 #include "ns3/simulator.h"
