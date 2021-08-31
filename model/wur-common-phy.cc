@@ -41,21 +41,19 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         NotifyRxDrop(ppdu, "Already in Tx");
                         break;
                 case WurCommonPhyState::IDLE:
-
-                        NS_LOG_INFO("Start receiving");
+                        //NS_LOG_INFO("Start receiving");
                         if(ppdu->GetPsdu()->GetPacketType() == "wus") {
                                 ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
                                 NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
                                 if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
-                                ChangeState(WurCommonPhyState::RX);
-                                SetRxPacket(ppdu);
-                                Simulator::Schedule(m_preambleDuration,
-                                        &WurCommonPhy::StartRx, this, ppdu,
-                                        rxPowerDbm);
+                                        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::IDLE);
+                                        SetRxPacket(ppdu);
+                                        Simulator::Schedule(m_preambleDuration,
+                                                &WurCommonPhy::StartRx, this, ppdu,
+                                                rxPowerDbm);
                                 }
                         } else {
-                                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
-                                SetRxPacket(ppdu);
+                                m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);
                                 Simulator::Schedule(m_preambleDuration,
                                         &WurCommonPhy::StartRx, this, ppdu,
                                         rxPowerDbm);

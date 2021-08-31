@@ -63,12 +63,23 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 //to be set as rxOkCallback in wur phy
 void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
-	FloodWUPPacketHeader header;
+	/*FloodWUPPacketHeader header;
 	packet->RemoveHeader(header);
-	
-	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());
 
-	
+	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());*/
+
+	WurSharedMacDummyImplHeader header;
+	packet->RemoveHeader(header);
+	NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
+	NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
+
+	if(header.GetFrom() == Mac8Address::ConvertFrom(GetAddress())) {
+		if(m_state == WurSharedMac::WurSharedMacState::IDLE) {
+			NS_LOG_DEBUG("Start receiving data mechanism.");
+			StartWurRxMechanism();
+		}
+	}
+
 	/*if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		//if IDLE, start wur rx mechanism
 		if(m_state  == WurSharedMac::WurSharedMacState::IDLE) {
@@ -85,18 +96,19 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	}	*/
 }
 void WurSharedMacDummyImpl::StartDataTx() {
-	NS_LOG_FUNCTION_NOARGS();
 	GetMainRadioPhy()->TurnOn();
 	// check if phy is available
 	if (GetMainRadioPhy()->GetState() ==
 	    WurCommonPhy::WurCommonPhyState::IDLE) {
+
+		NS_LOG_DEBUG("Starting data transmitting from device with wus " << m_netDevice->GetWakeUpSequence() << "!");
 
 		Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 		WurSharedMacDummyImplHeader header;
 		std::pair<Ptr<Packet>,Address> item;
 		item = m_txqueue.front();
 		header.SetFrom(GetAddress());
-		header.SetTo(std::get<1>(item));
+		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
 		psdu->SetPayload(payload);
