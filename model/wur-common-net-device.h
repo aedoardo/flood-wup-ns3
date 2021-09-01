@@ -18,7 +18,7 @@ namespace ns3 {
 
 		bool operator==(PacketReceived& p) const {
 			return addr == p.addr && packetId == p.packetId;
-		}
+		};
 	};
 
 	class WurSharedMac;
