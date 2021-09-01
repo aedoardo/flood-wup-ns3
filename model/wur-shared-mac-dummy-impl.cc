@@ -134,7 +134,7 @@ TypeId WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetInstanceTypeId()
 
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetSerializedSize()
     const {
-	return sizeof(uint8_t) * 3 + sizeof(uint64_t) * 1;
+	return sizeof(uint8_t) * 2;
 };
 
 void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
