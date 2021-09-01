@@ -18,10 +18,13 @@ class WurCommonNetDevice : public NetDevice {
 	ReceiveCallback m_rxCb;
 	PromiscReceiveCallback m_promiscRxCb;
 	Mac16Address wakeUpSequence;
+	std::map<Mac8Address, uint16_t[]> chachePacketId;
+	uint16_t currentPacketId = 0;
 
        public:
 	
 	void SetWakeUpSequence(Mac16Address wakeUp);
+	uint16_t GetNextPacketId();
 	Mac16Address GetWakeUpSequence();
 	Ptr<WurCommonPhy> GetMainRadioPhy() const;
 	Ptr<WurCommonPhy> GetWurRadioPhy() const;

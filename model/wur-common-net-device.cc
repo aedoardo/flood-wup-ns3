@@ -50,4 +50,10 @@ Mac16Address WurCommonNetDevice::GetWakeUpSequence() {
 	return wakeUpSequence;
 }
 
+uint16_t WurCommonNetDevice::GetNextPacketId() {
+	uint16_t toRet = currentPacketId;
+	currentPacketId += 1;
+	return toRet;
+}
+
 }  // namespace ns3

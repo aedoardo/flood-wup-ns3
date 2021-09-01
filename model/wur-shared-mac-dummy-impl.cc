@@ -13,9 +13,11 @@
 
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMacDummyImpl");
+
 void WurSharedMacDummyImpl::SetAddress(Address address) {
 	m_address = Mac8Address::ConvertFrom(address);
 }
+
 Address WurSharedMacDummyImpl::GetAddress() const { return m_address; }
 
 void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
@@ -73,27 +75,12 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
 	NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
 
-	if(header.GetFrom() == Mac8Address::ConvertFrom(GetAddress())) {
+	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		if(m_state == WurSharedMac::WurSharedMacState::IDLE) {
 			NS_LOG_DEBUG("Start receiving data mechanism.");
 			StartWurRxMechanism();
 		}
 	}
-
-	/*if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
-		//if IDLE, start wur rx mechanism
-		if(m_state  == WurSharedMac::WurSharedMacState::IDLE) {
-			
-			if(header.GetPacketType() == WurPacketType::WakeUpPacket)
-				NS_LOG_FUNCTION("Received WUR packet with sequence: " + header.GetWakeUpSequenceHeader());
-			else
-				NS_LOG_FUNCTION("Received WUR packet data.");
-			
-			//NS_LOG_FUNCTION("Received WUR packet for me " << header.GetTo());
-			StartWurRxMechanism();
-		}
-			
-	}	*/
 }
 void WurSharedMacDummyImpl::StartDataTx() {
 	GetMainRadioPhy()->TurnOn();
@@ -109,6 +96,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		item = m_txqueue.front();
 		header.SetFrom(GetAddress());
 		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
+		header.SetPacketId(m_netDevice->GetNextPacketId());
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
 		psdu->SetPayload(payload);
