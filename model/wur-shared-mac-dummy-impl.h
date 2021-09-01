@@ -41,9 +41,7 @@ class WurSharedMacDummyImpl : public WurSharedMac {
                 Mac8Address GetFrom() { return m_from; }
                 Mac8Address GetTo() { return m_to; }
                 std::string GetPacketType() { return m_seq; };
-                uint16_t GetPacketId() { return m_pid; };
-                void SetPacketId(uint16_t t);
-                uint16_t m_pid;
+
 
                private:
                 Mac8Address m_from;

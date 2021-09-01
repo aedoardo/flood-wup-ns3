@@ -98,7 +98,7 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
  */
 void WurCommonChannel::Receive(Ptr<WurCommonPhy> receiver,
 			       Ptr<WurCommonPpdu> ppdu, double rxPowerDbm) {
-	NS_LOG_FUNCTION(receiver << ppdu << rxPowerDbm);
+	//NS_LOG_FUNCTION(receiver << ppdu << rxPowerDbm);
 	if ((rxPowerDbm + receiver->GetRxGain()) <
 	    receiver->GetRxSensitivity()) {
 		NS_LOG_INFO("Received signal too weak to process: "

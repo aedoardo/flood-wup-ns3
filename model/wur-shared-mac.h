@@ -5,6 +5,7 @@
 #include "ns3/packet.h"
 #include "ns3/timer.h"
 #include "ns3/traced-callback.h"
+#include "wur-common-ppdu.h"
 
 namespace ns3 {
 class WurCommonNetDevice;

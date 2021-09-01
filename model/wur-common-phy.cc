@@ -6,6 +6,7 @@
 #include "wur-common-net-device.h"
 #include "wur-common-ppdu.h"
 #include "flood-wakeup-packet.h"
+#include "wur-shared-mac-dummy-impl.h"
 #include "ns3/header.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurCommonPhy");
@@ -20,6 +21,7 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
         NS_LOG_DEBUG("Packet type received: " << ppdu->GetPsdu()->GetPacketType());
         
         FloodWUPPacketHeader header;
+        WurSharedMacDummyImpl::WurSharedMacDummyImplHeader dataHeader;
         if (ppdu->IsTruncatedTx()) {
                 NS_LOG_DEBUG(
                     "Packet reception stopped because transmitter has been "
@@ -53,10 +55,16 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                                 rxPowerDbm);
                                 }
                         } else {
-                                m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);
-                                Simulator::Schedule(m_preambleDuration,
-                                        &WurCommonPhy::StartRx, this, ppdu,
-                                        rxPowerDbm);
+                                ppdu->GetPsdu()->GetPayload()->PeekHeader(dataHeader);
+                                if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == dataHeader.GetTo()) {
+                                        NS_LOG_DEBUG("Device addr: " << Mac8Address::ConvertFrom(m_netDevice->GetAddress()) << " has received a data packet with id: " << ppdu->GetPsdu()->GetPacketId());
+                                        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
+                                        m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);
+                                                                        Simulator::Schedule(m_preambleDuration,
+                                                                                &WurCommonPhy::StartRx, this, ppdu,
+                                                                                rxPowerDbm);
+                                }
+                                
                         }
                         break;
                 case WurCommonPhyState::OFF:

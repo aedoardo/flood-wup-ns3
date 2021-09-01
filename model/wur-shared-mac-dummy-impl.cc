@@ -56,10 +56,9 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
 	NS_LOG_DEBUG("Receiving data packet");
 
-
 	WurSharedMacDummyImplHeader header;
        	packet->PeekHeader(header);	
-	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo());
+	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo() << " ");
 }
 
 //to be set as rxOkCallback in wur phy
@@ -70,18 +69,18 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 
 	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());*/
 
-	WurSharedMacDummyImplHeader header;
-	packet->RemoveHeader(header);
-	NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
-	NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
+	//WurSharedMacDummyImplHeader header;
+	//packet->RemoveHeader(header);
+	//NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
+	//NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
 
-	NS_LOG_DEBUG("Packet id received: " << header.m_pid);
+	/*NS_LOG_DEBUG("Packet id received: " << header.m_pid);
 	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		if(m_state == WurSharedMac::WurSharedMacState::IDLE) {
 			NS_LOG_DEBUG("Start receiving data mechanism.");
 			StartWurRxMechanism();
 		}
-	}
+	}*/
 }
 void WurSharedMacDummyImpl::StartDataTx() {
 	GetMainRadioPhy()->TurnOn();
@@ -100,7 +99,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
 
 		uint16_t pid = m_netDevice->GetNextPacketId();
-		header.SetPacketId(pid);
+		psdu->SetPacketId(pid);
 		
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
@@ -156,10 +155,6 @@ uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Deserialize(
 void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Print(
     std::ostream &os) const {
 	os << m_from << " " << m_to;
-}
-
-void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::SetPacketId (uint16_t t) {
-	m_pid = t;
 }
 
 TypeId WurSharedMacDummyImpl::GetTypeId() {
