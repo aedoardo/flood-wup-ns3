@@ -8,6 +8,7 @@
 #include "ns3/simulator.h"
 #include "wur-common-net-device.h"
 #include "wur-common-phy.h"
+#include "wur-shared-mac-dummy-impl.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurCommonChannel");
 void WurCommonChannel::SetPropagationDelayModel(
@@ -52,29 +53,27 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 	for (PhyList::const_iterator i = m_phyList.begin();
 	     i != m_phyList.end(); i++) {
 		if (sender != (*i)) {
-			// For now don't account for inter channel interference
-			// nor channel bonding
-			// if ((*i)->GetChannelNumber() !=
-			//    sender->GetChannelNumber()) {
-			//        continue;
-			//}
 			NS_LOG_INFO("Found a PHY");
 			Ptr<MobilityModel> receiverMobility =
 			    (*i)->GetMobility()->GetObject<MobilityModel>();
-			// valid only for speed << c :)
+
+
 			Time delay =
 			    m_delay->GetDelay(senderMobility, receiverMobility);
 			double rxPowerDbm = m_loss->CalcRxPower(
 			    txPowerDbm, senderMobility, receiverMobility);
-			NS_LOG_DEBUG(
+			/*NS_LOG_DEBUG(
 			    "propagation: txPower="
 			    << txPowerDbm << "dbm, rxPower=" << rxPowerDbm
 			    << "dbm, "
 			    << "distance="
 			    << senderMobility->GetDistanceFrom(receiverMobility)
-			    << "m, delay=" << delay);
+			    << "m, delay=" << delay);*/
+
 			Ptr<WurCommonPpdu> copy = Copy(ppdu);
 			Ptr<NetDevice> dstNetDevice = (*i)->GetDevice();
+
+			NS_LOG_DEBUG("Sending a packet of type: " << copy->GetPsdu()->GetPacketType());
 
 			uint32_t dstNode;
 			if (dstNetDevice == 0) {

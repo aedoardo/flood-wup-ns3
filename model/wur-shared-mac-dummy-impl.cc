@@ -75,6 +75,7 @@ void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
 	NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
 
+	NS_LOG_DEBUG("Packet id received: " << header.m_pid);
 	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
 		if(m_state == WurSharedMac::WurSharedMacState::IDLE) {
 			NS_LOG_DEBUG("Start receiving data mechanism.");
@@ -93,16 +94,20 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 		WurSharedMacDummyImplHeader header;
 		std::pair<Ptr<Packet>,Address> item;
+
 		item = m_txqueue.front();
 		header.SetFrom(GetAddress());
 		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
-		header.SetPacketId(m_netDevice->GetNextPacketId());
+
+		uint16_t pid = m_netDevice->GetNextPacketId();
+		header.SetPacketId(pid);
+		
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
 		psdu->SetPayload(payload);
 		psdu->SetType("data");
 		m_txqueue.erase(m_txqueue.begin());
-		NS_LOG_FUNCTION("Starting transmitting packet");
+		NS_LOG_FUNCTION("Starting transmitting packet with pid: " << pid << " and dst: " << header.GetTo());
 		GetMainRadioPhy()->StartTx(psdu);
 
 
@@ -151,6 +156,10 @@ uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Deserialize(
 void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Print(
     std::ostream &os) const {
 	os << m_from << " " << m_to;
+}
+
+void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::SetPacketId (uint16_t t) {
+	m_pid = t;
 }
 
 TypeId WurSharedMacDummyImpl::GetTypeId() {

@@ -51,8 +51,8 @@ Mac16Address WurCommonNetDevice::GetWakeUpSequence() {
 }
 
 uint16_t WurCommonNetDevice::GetNextPacketId() {
-	uint16_t toRet = currentPacketId;
 	currentPacketId += 1;
+	uint16_t toRet = currentPacketId;
 	return toRet;
 }
 
