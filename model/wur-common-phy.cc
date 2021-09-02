@@ -62,6 +62,19 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                         double timePassed = now - ppdu->GetPsdu()->GetCreationTime().GetSeconds();
                                         
                                         NS_LOG_DEBUG("Time passed: " << timePassed );
+
+                                        // creo la struct per il pacchetto
+                                        PacketReceived pkt;
+                                        pkt.addr = dataHeader.GetTo();
+                                        pkt.packetId = ppdu->GetPsdu()->GetPacketId();
+
+                                        auto it = m_netDevice->GetCachePackets().find(pkt);
+                                        if(it == m_netDevice->GetCachePackets().end()) {
+                                                NS_LOG_DEBUG("First time that we receive this packet, adding it to the list!");
+                                                m_netDevice->GetCachePackets().insert(std::pair<PacketReceived, Time>(pkt, (Time) timePassed));
+                                        } else {
+                                                NS_LOG_DEBUG("Duplicated packet: " << it->first.packetId << " id.");
+                                        }
                                         
                                         m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
                                         m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);

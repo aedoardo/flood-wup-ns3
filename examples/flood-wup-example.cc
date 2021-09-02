@@ -29,8 +29,8 @@ using namespace ns3;
 //
 int main(int argc, char** argv) {
 	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_DEBUG);
-    //LogComponentEnable("WurSharedMac", LOG_LEVEL_ALL);
-    //LogComponentEnable("WurSharedMacDummyImpl", LOG_LEVEL_ALL);
+    LogComponentEnable("WurSharedMac", LOG_LEVEL_ALL);
+    LogComponentEnable("WurSharedMacDummyImpl", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonPhy", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonChannel", LOG_LEVEL_ALL);
 	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_DEBUG);
@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 	receiverDevice = CreateObject<WurCommonNetDeviceDummyImpl>();
 
 	receiverDevice->SetWakeUpSequence(Mac16Address("00:01"));
-	senderDevice->SetWakeUpSequence(Mac16Address("00:02"));
+	senderDevice->SetWakeUpSequence(Mac16Address("00:00"));
 
 	senderNode = CreateObject<Node>();
 	receiverNode = CreateObject<Node>();
@@ -184,7 +184,7 @@ int main(int argc, char** argv) {
 
 	ApplicationContainer apps = onOffHelper.Install(senderNode);
 	apps.Start(Seconds(1.0));
-	apps.Stop(Seconds(1.58));
+	apps.Stop(Seconds(3.0));
 	receiverPhy->TurnOff();
 	senderPhy->TurnOff();
 	senderWurPhy->TurnOn();

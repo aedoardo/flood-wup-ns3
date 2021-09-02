@@ -100,7 +100,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
 
 		uint16_t pid = m_netDevice->GetNextPacketId();
-		psdu->SetPacketId(pid);
+		psdu->SetPacketId(1);
 		Time creationTime = (Time) Simulator::Now().GetSeconds();
 
 		NS_LOG_DEBUG("Creation time: " << creationTime);

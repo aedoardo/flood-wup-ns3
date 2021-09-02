@@ -7,18 +7,20 @@
 #include "ns3/mac16-address.h"
 #include "ns3/mac8-address.h"
 //#include "wur-common-phy.h"
-
-
-
 namespace ns3 {
 
 	struct PacketReceived {
 		Mac8Address addr;
 		uint16_t packetId;
 
-		bool operator==(PacketReceived& p) const {
-			return addr == p.addr && packetId == p.packetId;
+		bool operator==(const PacketReceived& a) {
+			return a.addr == addr && a.packetId == packetId;
 		};
+
+		friend bool operator<(const PacketReceived& a, const PacketReceived& b) {
+			return a.addr == b.addr && a.packetId == b.packetId;
+		};
+
 	};
 
 	class WurSharedMac;
@@ -49,6 +51,7 @@ namespace ns3 {
 			void SetSharedMac(Ptr<WurSharedMac> mac); 
 			Ptr<WurCommonChannel> GetMainRadioChannel() const;
 			Ptr<WurCommonChannel> GetWurRadioChannel() const;
+			std::map<PacketReceived, Time> GetCachePackets() { return cachePacketId; };
 		// inherithed from NetDevice
 		public:
 			/**
