@@ -55,6 +55,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 	// TODO: print packet
 	NS_LOG_FUNCTION_NOARGS();
 	NS_LOG_DEBUG("Receiving data packet");
+	
 
 	WurSharedMacDummyImplHeader header;
        	packet->PeekHeader(header);	
@@ -100,7 +101,11 @@ void WurSharedMacDummyImpl::StartDataTx() {
 
 		uint16_t pid = m_netDevice->GetNextPacketId();
 		psdu->SetPacketId(pid);
-		
+		Time creationTime = (Time) Simulator::Now().GetSeconds();
+
+		NS_LOG_DEBUG("Creation time: " << creationTime);
+		psdu->SetCreationTime(creationTime);
+
 		Ptr<Packet> payload = std::get<0>(item);
 		payload->AddHeader(header);
 		psdu->SetPayload(payload);

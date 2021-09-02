@@ -58,6 +58,11 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                 ppdu->GetPsdu()->GetPayload()->PeekHeader(dataHeader);
                                 if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == dataHeader.GetTo()) {
                                         NS_LOG_DEBUG("Device addr: " << Mac8Address::ConvertFrom(m_netDevice->GetAddress()) << " has received a data packet with id: " << ppdu->GetPsdu()->GetPacketId());
+                                        double now = Simulator::Now().GetSeconds();
+                                        double timePassed = now - ppdu->GetPsdu()->GetCreationTime().GetSeconds();
+                                        
+                                        NS_LOG_DEBUG("Time passed: " << timePassed );
+                                        
                                         m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
                                         m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);
                                                                         Simulator::Schedule(m_preambleDuration,
