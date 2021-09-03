@@ -9,20 +9,6 @@
 //#include "wur-common-phy.h"
 namespace ns3 {
 
-	struct PacketReceived {
-		Mac8Address addr;
-		uint16_t packetId;
-
-		bool operator==(const PacketReceived& a) {
-			return a.addr == addr && a.packetId == packetId;
-		};
-
-		friend bool operator<(const PacketReceived& a, const PacketReceived& b) {
-			return a.addr == b.addr && a.packetId == b.packetId;
-		};
-
-	};
-
 	class WurSharedMac;
 	class WurCommonPhy;
 
@@ -35,7 +21,8 @@ namespace ns3 {
 			ReceiveCallback m_rxCb;
 			PromiscReceiveCallback m_promiscRxCb;
 			Mac16Address wakeUpSequence;
-			std::map<PacketReceived, Time> cachePacketId;
+			std::map<Mac8Address, uint16_t> lastPacketReceived;
+			std::map<std::pair<Mac8Address, uint16_t>, Time> packetTimePassed;
 			uint16_t currentPacketId = 0;
 
 		public:
@@ -51,7 +38,7 @@ namespace ns3 {
 			void SetSharedMac(Ptr<WurSharedMac> mac); 
 			Ptr<WurCommonChannel> GetMainRadioChannel() const;
 			Ptr<WurCommonChannel> GetWurRadioChannel() const;
-			std::map<PacketReceived, Time> GetCachePackets() { return cachePacketId; };
+			std::map<Mac8Address, uint16_t> GetLastPacketReceived() { return lastPacketReceived; };
 		// inherithed from NetDevice
 		public:
 			/**
