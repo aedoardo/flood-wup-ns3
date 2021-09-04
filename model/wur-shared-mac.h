@@ -24,6 +24,7 @@ class WurSharedMac : public Object {
 	Ptr<WurCommonNetDevice> GetNetDevice() const;
 	Ptr<WurCommonPhy> GetMainRadioPhy() const;
 	Ptr<WurCommonPhy> GetWurRadioPhy() const;
+        void ReceiveWurPacket(Ptr<WurCommonPsdu> psdu);
 
         virtual bool SupportsSendFrom(void) const = 0;
 	//Enqueue packet from upper layer

@@ -17,43 +17,45 @@ class WurCommonPsdu;
  */ 
 class WurCommonPhy : public Object {
        public:
-	typedef Callback<void, Ptr<Packet> > RxOkCallback;
-	typedef Callback<void, Ptr<Packet> > TxOkCallback; 
-	typedef enum {
-		OFF,
-		IDLE,
-		TX,
-		RX,
-		DISABLED,
-	} WurCommonPhyState;
-	Ptr<WurCommonChannel> GetChannel() const; 
-	Ptr<MobilityModel> GetMobility() const; 
-	Ptr<WurCommonNetDevice> GetDevice() const; 
-	void SetDevice(Ptr<WurCommonNetDevice>);
-	void SetMobility(Ptr<MobilityModel>);
-	void SetChannel(Ptr<WurCommonChannel>);
-	void StartReceivePreamble(Ptr<WurCommonPpdu> ppdu, double powerDbm);
-	static TypeId GetTypeId(void);
-	void SetRxGain(double rxGainDbm) { m_rxGainDbm = rxGainDbm; };
-	void SetTxGain(double txGainDbm) { m_txGainDbm = txGainDbm; };
-	void SetRxSensitivity(double rxSensitivityDbm) {
-		m_rxSensitivityDbm = rxSensitivityDbm;
-	};
-	void SetTxPower(double txPowerDbm) { m_txPowerDbm = txPowerDbm; }
-	double GetRxGain() const { return m_rxGainDbm; };
-	double GetTxGain() const { return m_txGainDbm; };
-	double GetRxSensitivity() const { return m_rxSensitivityDbm; };
-	double GetTxPower() { return m_txPowerDbm; }
-	WurCommonPhyState GetState() { return m_state; }
-	void TurnOff();
-	void TurnOn();
-	virtual void NotifyRxBegin(Ptr<const WurCommonPpdu>) = 0;
-	virtual void NotifyRxDrop(Ptr<const WurCommonPpdu>, std::string) = 0; 
-	virtual void NotifyRxEnd(Ptr<const WurCommonPpdu>) = 0; 
-	virtual void NotifyTxBegin(Ptr<const WurCommonPpdu>, double) = 0;
-	virtual void NotifyTxDrop(Ptr<const WurCommonPpdu>) = 0;
-	virtual void NotifyTxEnd(Ptr<const WurCommonPpdu>) = 0;
-	virtual void StartRx(Ptr<WurCommonPpdu> ppdu, double rxPowerDbm) = 0;
+			typedef Callback<void, Ptr<Packet> > RxOkCallback;
+			typedef Callback<void, Ptr<Packet> > TxOkCallback; 
+			typedef enum {
+				OFF,
+				IDLE,
+				TX,
+				RX,
+				DISABLED,
+			} WurCommonPhyState;
+			Ptr<WurCommonChannel> GetChannel() const; 
+			Ptr<MobilityModel> GetMobility() const; 
+			Ptr<WurCommonNetDevice> GetDevice() const; 
+			void SetDevice(Ptr<WurCommonNetDevice>);
+			void SetMobility(Ptr<MobilityModel>);
+			void SetChannel(Ptr<WurCommonChannel>);
+			void StartReceivePreamble(Ptr<WurCommonPpdu> ppdu, double powerDbm);
+			static TypeId GetTypeId(void);
+			void SetRxGain(double rxGainDbm) { m_rxGainDbm = rxGainDbm; };
+			void SetTxGain(double txGainDbm) { m_txGainDbm = txGainDbm; };
+			void SetRxSensitivity(double rxSensitivityDbm) {
+				m_rxSensitivityDbm = rxSensitivityDbm;
+			};
+			void SetTxPower(double txPowerDbm) { m_txPowerDbm = txPowerDbm; }
+			double GetRxGain() const { return m_rxGainDbm; };
+			double GetTxGain() const { return m_txGainDbm; };
+			double GetRxSensitivity() const { return m_rxSensitivityDbm; };
+			double GetTxPower() { return m_txPowerDbm; }
+			WurCommonPhyState GetState() { return m_state; }
+			void TurnOff();
+			void TurnOn();
+			virtual void NotifyRxBegin(Ptr<const WurCommonPpdu>) = 0;
+			virtual void NotifyRxDrop(Ptr<const WurCommonPpdu>, std::string) = 0; 
+			virtual void NotifyRxEnd(Ptr<const WurCommonPpdu>) = 0; 
+			virtual void NotifyTxBegin(Ptr<const WurCommonPpdu>, double) = 0;
+			virtual void NotifyTxDrop(Ptr<const WurCommonPpdu>) = 0;
+			virtual void NotifyTxEnd(Ptr<const WurCommonPpdu>) = 0;
+			virtual void StartRx(Ptr<WurCommonPpdu> ppdu, double rxPowerDbm) = 0;
+			void ChangeState(WurCommonPhy::WurCommonPhyState);
+			
 	virtual void StartTx(Ptr<WurCommonPsdu> psdu) = 0;
         virtual void SetEnergyModelCallback(DeviceEnergyModel::ChangeStateCallback);
         virtual void EnergyDepletionHandler(void);
@@ -92,7 +94,7 @@ class WurCommonPhy : public Object {
 	void UnsetRxPacket() { m_rxPacket = nullptr;  } 
 	void UnsetTxPacket() { m_txPacket = nullptr;  } 
 
-        void ChangeState(WurCommonPhy::WurCommonPhyState);
+        
 
        public:
 	void SetRxOkCallback(RxOkCallback callback) { m_rxOkCallback = callback; }

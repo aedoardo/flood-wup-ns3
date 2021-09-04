@@ -73,7 +73,7 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 			Ptr<WurCommonPpdu> copy = Copy(ppdu);
 			Ptr<NetDevice> dstNetDevice = (*i)->GetDevice();
 
-			NS_LOG_DEBUG("Sending a packet of type: " << copy->GetPsdu()->GetPacketType());
+			//NS_LOG_DEBUG("Sending a packet of type: " << copy->GetPsdu()->GetPacketType());
 
 			uint32_t dstNode;
 			if (dstNetDevice == 0) {

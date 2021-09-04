@@ -6,6 +6,7 @@
 #include "ns3/log.h"
 #include "wur-common-net-device.h"
 #include "wur-common-phy.h"
+#include "flood-wakeup-packet.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMac");
 void WurSharedMac::SetNetDevice(Ptr<WurCommonNetDevice> netDevice) {
@@ -25,9 +26,6 @@ void WurSharedMac::Enqueue(Ptr<Packet> packet, Address to) {
         m_txqueue.push_back(std::make_pair(packet, to));
         NS_LOG_FUNCTION(packet);
         NS_LOG_INFO("Packets in queue: " + std::to_string(m_txqueue.size()));
-        // if in IDLE state, try send packet immediately
-        // TODO: do something else, e.g. invoke a wrapper
-        // implemented in a subclass
 
         if (m_state == WurSharedMacState::IDLE) {
                 StartWurTxMechanism();
@@ -39,6 +37,7 @@ void WurSharedMac::StartWurTxMechanism() {
         if (GetWurRadioPhy()->GetState() !=
             WurCommonPhy::WurCommonPhyState::DISABLED) {
                 wurSendingTimer.Schedule(WUR_RX_MECHANISM_TIMEOUT);
+                
                 m_state = WurSharedMacState::WUR_TX_MECHANISM;
                 StartWurTxMechanismImpl();
         } else 
@@ -140,6 +139,19 @@ void WurSharedMac::TimerDataSendingCallback() {
 void WurSharedMac::NotifyTx(Ptr<Packet> packet) {
         NS_LOG_FUNCTION(packet);
         m_macTxTrace(packet);
+}
+
+void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
+        FloodWUPPacketHeader header;
+        psdu->GetPayload()->PeekHeader(header);
+        Mac16Address wakeUpSequence = header.GetWakeUpSequence();
+
+        NS_LOG_DEBUG("Received wake-up packet with wake up sequence: " << wakeUpSequence);
+        if(wakeUpSequence == m_netDevice->GetWakeUpSequence()) {
+                // qui riceviamo la wake up sequence per questo device
+                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhy::IDLE); // accendiamo la main radio
+                NS_LOG_DEBUG("Turned on main radio.");
+        }
 }
 
 void WurSharedMac::Initialize() {

@@ -28,12 +28,12 @@
 using namespace ns3;
 //
 int main(int argc, char** argv) {
-	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_DEBUG);
+	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_ALL);
     LogComponentEnable("WurSharedMac", LOG_LEVEL_ALL);
     LogComponentEnable("WurSharedMacDummyImpl", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonPhy", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonChannel", LOG_LEVEL_ALL);
-	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_DEBUG);
+	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_ALL);
 
 	Ptr<Node> senderNode, receiverNode;
 
