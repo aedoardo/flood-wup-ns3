@@ -31,8 +31,11 @@ namespace ns3 {
 			<< GetRxPacket()->GetPsdu()->GetPayload()->GetSerializedSize()
 			<< "rx delay " << delay);*/
 
-		
-		GetDevice()->GetSharedMac()->ReceiveWurPacket(ppdu->GetPsdu());
+		if(ppdu->GetPsdu()->GetPacketType() == "wus") {
+			GetDevice()->GetSharedMac()->ReceiveWurPacket(ppdu->GetPsdu());
+		} else {
+			GetDevice()->GetSharedMac()->ReceivedData(ppdu->GetPsdu());
+		}
 		//GetDevice()->GetSharedMac()->OnWurRx(ppdu);
 		Simulator::Schedule(delay, &WurCommonPhyDummyImpl::EndRx, this, ppdu);
 	}

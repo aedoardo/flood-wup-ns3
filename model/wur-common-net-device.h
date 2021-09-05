@@ -21,7 +21,6 @@ namespace ns3 {
 			ReceiveCallback m_rxCb;
 			PromiscReceiveCallback m_promiscRxCb;
 			Mac16Address wakeUpSequence;
-			std::map<Mac8Address, uint16_t> lastPacketReceived;
 			std::map<std::pair<Mac8Address, uint16_t>, Time> packetTimePassed;
 			uint16_t currentPacketId = 0;
 
@@ -38,6 +37,7 @@ namespace ns3 {
 			void SetSharedMac(Ptr<WurSharedMac> mac); 
 			Ptr<WurCommonChannel> GetMainRadioChannel() const;
 			Ptr<WurCommonChannel> GetWurRadioChannel() const;
+			std::map<Mac8Address, uint16_t> lastPacketReceived;
 			std::map<Mac8Address, uint16_t> GetLastPacketReceived() { return lastPacketReceived; };
 		// inherithed from NetDevice
 		public:

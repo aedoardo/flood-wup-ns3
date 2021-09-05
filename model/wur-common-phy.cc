@@ -58,7 +58,14 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                                 rxPowerDbm);
                                 }*/
                         } else {
-                                ppdu->GetPsdu()->GetPayload()->PeekHeader(dataHeader);
+                                if(m_netDevice->GetMainRadioPhy()->GetState() == WurCommonPhyState::IDLE) {
+                                        // start receiving
+                                        SetRxPacket(ppdu);
+                                        Simulator::Schedule(m_preambleDuration,
+                                                &WurCommonPhy::StartRx, this, ppdu,
+                                                rxPowerDbm);
+                                }
+                                /*ppdu->GetPsdu()->GetPayload()->PeekHeader(dataHeader);
                                 if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == dataHeader.GetTo()) {
                                         NS_LOG_DEBUG("Device addr: " << Mac8Address::ConvertFrom(m_netDevice->GetAddress()) << " has received a data packet with id: " << ppdu->GetPsdu()->GetPacketId());
                                         m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
@@ -66,7 +73,7 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                                                         Simulator::Schedule(m_preambleDuration,
                                                                                 &WurCommonPhy::StartRx, this, ppdu,
                                                                                 rxPowerDbm);
-                                }
+                                }*/
                                 
                         }
                         break;

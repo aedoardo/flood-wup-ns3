@@ -7,6 +7,8 @@
 #include "wur-common-net-device.h"
 #include "wur-common-phy.h"
 #include "flood-wakeup-packet.h"
+#include "wur-shared-mac-dummy-impl.h"
+#include "wur-common-phy.h"
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMac");
 void WurSharedMac::SetNetDevice(Ptr<WurCommonNetDevice> netDevice) {
@@ -152,6 +154,31 @@ void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
                 m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhy::IDLE); // accendiamo la main radio
                 NS_LOG_DEBUG("Turned on main radio.");
         }
+}
+
+void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
+        WurSharedMacDummyImpl::WurSharedMacDummyImplHeader header;
+        psdu->GetPayload()->PeekHeader(header);
+        NS_LOG_DEBUG("Received data packet for device with wus: " << m_netDevice->GetWakeUpSequence());
+        // qui spegniamo la main radio e la wake up radio in IDLE del device.
+        if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
+                NS_LOG_DEBUG("First time that we receive a packet from the sender.");
+                m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
+        } else {
+                NS_LOG_DEBUG("Checking if is a duplicate.");
+                uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
+                if(lastId == psdu->GetPacketId()) {
+                        NS_LOG_DEBUG("Received packet is a duplicate!");
+                } else {
+                        m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
+                        NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
+                }
+        }
+
+        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::OFF);
+        m_netDevice->GetWurRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::IDLE);
+
+
 }
 
 void WurSharedMac::Initialize() {
