@@ -151,7 +151,7 @@ void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
         NS_LOG_DEBUG("Received wake-up packet with wake up sequence: " << wakeUpSequence);
         if(wakeUpSequence == m_netDevice->GetWakeUpSequence()) {
                 // qui riceviamo la wake up sequence per questo device
-                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhy::IDLE); // accendiamo la main radio
+                m_netDevice->GetMainRadioPhy()->TurnOn(); // accendiamo la main radio
                 NS_LOG_DEBUG("Turned on main radio.");
         }
 }
@@ -175,7 +175,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                 }
         }
 
-        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::OFF);
+        m_netDevice->GetMainRadioPhy()->TurnOff();
         m_netDevice->GetWurRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::IDLE);
 
 
