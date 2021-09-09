@@ -28,12 +28,12 @@
 using namespace ns3;
 //
 int main(int argc, char** argv) {
-	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_ALL);
+	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_DEBUG);
     LogComponentEnable("WurSharedMac", LOG_LEVEL_ALL);
     LogComponentEnable("WurSharedMacDummyImpl", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonPhy", LOG_LEVEL_ALL);
 	LogComponentEnable("WurCommonChannel", LOG_LEVEL_ALL);
-	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_ALL);
+	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_DEBUG);
 
 	Ptr<Node> senderNode, receiverNode;
 
@@ -57,8 +57,16 @@ int main(int argc, char** argv) {
 	senderDevice = CreateObject<WurCommonNetDeviceDummyImpl>();
 	receiverDevice = CreateObject<WurCommonNetDeviceDummyImpl>();
 
-	receiverDevice->SetWakeUpSequence(Mac16Address("00:01"));
-	senderDevice->SetWakeUpSequence(Mac16Address("00:00"));
+
+	std::vector<Mac16Address> wakeUpSequenceList;
+	Mac16Address t;
+	for(int i = 0; i < 30; i++) {
+		wakeUpSequenceList.push_back(t.Allocate());
+	}
+	//receiverDevice->SetWakeUpSequence(Mac16Address("00:01"));
+	//senderDevice->SetWakeUpSequence(Mac16Address("00:00"));
+	receiverDevice->SetWakeUpSequenceList(wakeUpSequenceList);
+	senderDevice->SetWakeUpSequenceList(wakeUpSequenceList);
 
 	senderNode = CreateObject<Node>();
 	receiverNode = CreateObject<Node>();

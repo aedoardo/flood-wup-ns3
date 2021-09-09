@@ -157,26 +157,30 @@ void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
 }
 
 void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
+        
         WurSharedMacDummyImpl::WurSharedMacDummyImplHeader header;
         psdu->GetPayload()->PeekHeader(header);
-        NS_LOG_DEBUG("Received data packet for device with wus: " << m_netDevice->GetWakeUpSequence());
-        // qui spegniamo la main radio e la wake up radio in IDLE del device.
-        if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
-                NS_LOG_DEBUG("First time that we receive a packet from the sender.");
-                m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
-        } else {
-                NS_LOG_DEBUG("Checking if is a duplicate.");
-                uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
-                if(lastId == psdu->GetPacketId()) {
-                        NS_LOG_DEBUG("Received packet is a duplicate!");
-                } else {
+        if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == header.GetTo()) {
+                NS_LOG_DEBUG("Received data packet for device with wus: " << m_netDevice->GetWakeUpSequence());
+                // qui spegniamo la main radio e la wake up radio in IDLE del device.
+                if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
+                        NS_LOG_DEBUG("First time that we receive a packet from the sender.");
                         m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
-                        NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
+                } else {
+                        NS_LOG_DEBUG("Checking if is a duplicate.");
+                        uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
+                        if(lastId == psdu->GetPacketId()) {
+                                NS_LOG_DEBUG("Received packet is a duplicate!");
+                        } else {
+                                m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
+                                NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
+                        }
                 }
+                m_netDevice->GetMainRadioPhy()->TurnOff();
+                m_netDevice->GetWurRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::IDLE);
+                // advance wake up sequence!
+                m_netDevice->AdvanceWakeUpSequence();
         }
-
-        m_netDevice->GetMainRadioPhy()->TurnOff();
-        m_netDevice->GetWurRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::IDLE);
 
 
 }

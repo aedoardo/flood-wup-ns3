@@ -24,6 +24,8 @@ namespace ns3 {
 			std::map<std::pair<Mac8Address, uint16_t>, Time> packetTimePassed;
 			uint16_t currentPacketId = 0;
 			std::vector<Mac16Address> wakeUpSequenceList;
+			int wakeUpSequenceListLength;
+			int currentWakeUpSequence;
 
 		public:
 		
@@ -43,7 +45,22 @@ namespace ns3 {
 			void SetWakeUpSequenceList(std::vector<Mac16Address> list) {
 				wakeUpSequenceList = list;
 				wakeUpSequence = list.at(0); // set up the fist wake-up sequence	
+				currentWakeUpSequence = 0;
+				wakeUpSequenceListLength = list.size();
+ 			}
+
+			void AdvanceWakeUpSequence() {
+				if(currentWakeUpSequence < wakeUpSequenceListLength - 1) {
+					currentWakeUpSequence += 1;
+					wakeUpSequence = wakeUpSequenceList.at(currentWakeUpSequence);
+				} else {
+					currentWakeUpSequence = 0;
+					wakeUpSequence = wakeUpSequenceList.at(currentWakeUpSequence);
+				}
+
+				std::cout << "Changed wake-up sequence in: " << wakeUpSequence << std::endl;
 			}
+
 		// inherithed from NetDevice
 		public:
 			/**
