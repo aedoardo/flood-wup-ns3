@@ -23,6 +23,7 @@ namespace ns3 {
 			Mac16Address wakeUpSequence;
 			std::map<std::pair<Mac8Address, uint16_t>, Time> packetTimePassed;
 			uint16_t currentPacketId = 0;
+			std::vector<Mac16Address> wakeUpSequenceList;
 
 		public:
 		
@@ -39,6 +40,10 @@ namespace ns3 {
 			Ptr<WurCommonChannel> GetWurRadioChannel() const;
 			std::map<Mac8Address, uint16_t> lastPacketReceived;
 			std::map<Mac8Address, uint16_t> GetLastPacketReceived() { return lastPacketReceived; };
+			void SetWakeUpSequenceList(std::vector<Mac16Address> list) {
+				wakeUpSequenceList = list;
+				wakeUpSequence = list.at(0); // set up the fist wake-up sequence	
+			}
 		// inherithed from NetDevice
 		public:
 			/**
