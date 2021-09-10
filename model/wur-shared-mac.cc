@@ -148,7 +148,7 @@ void WurSharedMac::SetForwardUpCb(Callback<void, Ptr<Packet>, uint16_t, const Ma
 } 
 
 void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
-        FloodWUPPacketHeader header;
+        /*FloodWUPPacketHeader header;
         psdu->GetPayload()->PeekHeader(header);
         Mac16Address wakeUpSequence = header.GetWakeUpSequence();
 
@@ -157,12 +157,12 @@ void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
                 // qui riceviamo la wake up sequence per questo device
                 m_netDevice->GetMainRadioPhy()->TurnOn(); // accendiamo la main radio
                 NS_LOG_DEBUG("Turned on main radio.");
-        }
+        }*/
 }
 
 void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
         
-        WurSharedMacDummyImpl::WurSharedMacDummyImplHeader header;
+        /*WurSharedMacDummyImpl::WurSharedMacDummyImplHeader header;
         psdu->GetPayload()->PeekHeader(header);
         if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == header.GetTo()) {
                 NS_LOG_DEBUG("Received data packet for device with wus: " << m_netDevice->GetWakeUpSequence());
@@ -171,7 +171,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                         NS_LOG_DEBUG("First time that we receive a packet from the sender.");
                         m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
                         m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
-                        
+                        m_netDevice->GetSharedMac()->OnDataRx();
                 } else {
                         NS_LOG_DEBUG("Checking if is a duplicate.");
                         uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
@@ -187,7 +187,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                 m_netDevice->GetWurRadioPhy()->ChangeState(WurCommonPhy::WurCommonPhyState::IDLE);
                 // advance wake up sequence!
                 
-        }
+        }*/
 
 
 }

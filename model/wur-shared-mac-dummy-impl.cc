@@ -54,17 +54,51 @@ void WurSharedMacDummyImpl::StartWurRxMechanismImpl() {
 void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 	// TODO: print packet
 	NS_LOG_FUNCTION_NOARGS();
-	/*NS_LOG_DEBUG("Receiving data packet");
+	NS_LOG_DEBUG("Receiving data packet");
 	
 
 	WurSharedMacDummyImplHeader header;
        	packet->PeekHeader(header);	
-	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo() << " ");*/
+	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo() << " ");
+	if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == header.GetTo() && m_netDevice->GetMainRadioPhy()->GetState() == WurCommonPhy::IDLE) {
+		NS_LOG_DEBUG("Received data packet for device with wus: " << m_netDevice->GetWakeUpSequence() << "; pid: " << +header.id);
+		// qui spegniamo la main radio e la wake up radio in IDLE del device.
+		uint16_t pid = header.id;
+		if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
+			m_netDevice->lastPacketReceived.insert({header.GetFrom(), pid});
+			m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
+		} else {
+			
+			uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
+			if(lastId == pid) {
+					NS_LOG_DEBUG("Received packet is a duplicate!");
+			} else {
+					m_netDevice->lastPacketReceived.insert({header.GetFrom(), pid});
+					NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
+					m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
+			}
+		}
+		
+		m_netDevice->GetMainRadioPhy()->TurnOff();
+		//m_netDevice->GetWurRadioPhy()->TurnOn();
+		
+	}
 }
 
 //to be set as rxOkCallback in wur phy
 void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
+
+	FloodWUPPacketHeader header;
+	packet->PeekHeader(header);
+	NS_LOG_DEBUG("Received a wake-up sequence packet with wus: " << header.GetWakeUpSequence());
+
+	if(header.GetWakeUpSequence() == m_netDevice->GetWakeUpSequence()) {
+			// qui riceviamo la wake up sequence per questo device
+			m_netDevice->GetMainRadioPhy()->TurnOn(); // accendiamo la main radio
+			NS_LOG_DEBUG("Turned on main radio.");
+	}
+
 }
 void WurSharedMacDummyImpl::StartDataTx() {
 	GetMainRadioPhy()->TurnOn();
@@ -84,6 +118,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 
 		uint16_t pid = m_netDevice->GetNextPacketId();
 		psdu->SetPacketId(pid);
+		header.id = pid;
 		Time creationTime = (Time) Simulator::Now().GetSeconds();
 
 		NS_LOG_DEBUG("Creation time: " << creationTime);
@@ -121,7 +156,7 @@ TypeId WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetInstanceTypeId()
 
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::GetSerializedSize()
     const {
-	return sizeof(uint8_t) * 2;
+	return sizeof(uint8_t) * 2 + sizeof(uint16_t) * 1;
 };
 
 void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
@@ -131,12 +166,14 @@ void WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Serialize(
 	start.WriteU8(temp);
 	m_to.CopyTo(&temp);
 	start.WriteU8(temp);
+	start.WriteU16(id);
 }
 uint32_t WurSharedMacDummyImpl::WurSharedMacDummyImplHeader::Deserialize(
     Buffer::Iterator start) {
 	Buffer::Iterator i = start;
 	m_from = Mac8Address(i.ReadU8());
 	m_to = Mac8Address(i.ReadU8());
+	id = uint16_t (i.ReadU16());
 	return i.GetDistanceFrom(start);
 }
 

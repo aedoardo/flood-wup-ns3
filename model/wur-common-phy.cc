@@ -43,7 +43,12 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         break;
                 case WurCommonPhyState::IDLE:
                         //NS_LOG_INFO("Start receiving");
-                        if(ppdu->GetPsdu()->GetPacketType() == "wus") {
+                        SetRxPacket(ppdu);
+                        Simulator::Schedule(m_preambleDuration,
+                                &WurCommonPhy::StartRx, this, ppdu,
+                                rxPowerDbm);
+                                
+                        /*if(ppdu->GetPsdu()->GetPacketType() == "wus") {
                                 SetRxPacket(ppdu);
                                 Simulator::Schedule(m_preambleDuration,
                                         &WurCommonPhy::StartRx, this, ppdu,
@@ -51,12 +56,9 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                         } else {
                                 if(m_netDevice->GetMainRadioPhy()->GetState() == WurCommonPhyState::IDLE) {
                                         // start receiving
-                                        SetRxPacket(ppdu);
-                                        Simulator::Schedule(m_preambleDuration,
-                                                &WurCommonPhy::StartRx, this, ppdu,
-                                                rxPowerDbm);
+                                        
                                 }           
-                        }
+                        }*/
                         break;
                 case WurCommonPhyState::OFF:
                         NS_LOG_DEBUG("Drop packet because in sleep mode");
@@ -121,15 +123,7 @@ void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         //Hence, I only set new state if I wasn't disabled
         if(m_state != DISABLED)
                 m_state = state;
-        
-        /*if(state == WurCommonPhyState::RX) {
-            // accendiamo la MAIN ANTENNA
-            if(m_netDevice->GetMainRadioPhy()->m_state == WurCommonPhyState::OFF) {
-                NS_LOG_DEBUG("Waking up main radio");
-                m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::IDLE);
-                NS_LOG_DEBUG("Device ready to receive data packets.");
-            }
-        }*/      
+          
         NS_LOG_DEBUG("Final state " << m_state << " device with wus: " << m_netDevice->GetWakeUpSequence() << "");
 }
 
