@@ -171,7 +171,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                         NS_LOG_DEBUG("First time that we receive a packet from the sender.");
                         m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
                         m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
-                        
+                        // m_netDevice->GetSharedMac()->SetForwardUpCb() // call the forwardUp
                 } else {
                         NS_LOG_DEBUG("Checking if is a duplicate.");
                         uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
@@ -181,6 +181,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                                 m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
                                 NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
                                 m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
+                                // m_netDevice->GetSharedMac()->SetForwardUpCb() // call the forwardUp
                         }
                 }
                 m_netDevice->GetMainRadioPhy()->TurnOff();
