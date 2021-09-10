@@ -39,7 +39,7 @@ void WurCommonNetDevice::SetReceiveCallback(ReceiveCallback cb) {
 }
 
 void WurCommonNetDevice::ForwardUp(Ptr<Packet> pkt, uint16_t n, const Mac8Address& addr) {
-	NS_LOG_DEBUG("RECEIVED PACKET AT APPLICATION \n \n \n \n");
+	NS_LOG_DEBUG("RECEIVED PACKET AT APPLICATION \n");
 }
 
 void WurCommonNetDevice::SetPromiscReceiveCallback(
