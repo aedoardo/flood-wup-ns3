@@ -48,15 +48,6 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                 Simulator::Schedule(m_preambleDuration,
                                         &WurCommonPhy::StartRx, this, ppdu,
                                         rxPowerDbm);
-                                /*ppdu->GetPsdu()->GetPayload()->PeekHeader(header);
-                                NS_LOG_INFO("Received wake up sequence: " << header.GetWakeUpSequence());
-                                if(m_netDevice->GetWakeUpSequence() == header.GetWakeUpSequence()) {
-                                        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::IDLE);
-                                        SetRxPacket(ppdu);
-                                        Simulator::Schedule(m_preambleDuration,
-                                                &WurCommonPhy::StartRx, this, ppdu,
-                                                rxPowerDbm);
-                                }*/
                         } else {
                                 if(m_netDevice->GetMainRadioPhy()->GetState() == WurCommonPhyState::IDLE) {
                                         // start receiving
@@ -64,17 +55,7 @@ void WurCommonPhy::StartReceivePreamble(Ptr<WurCommonPpdu> ppdu,
                                         Simulator::Schedule(m_preambleDuration,
                                                 &WurCommonPhy::StartRx, this, ppdu,
                                                 rxPowerDbm);
-                                }
-                                /*ppdu->GetPsdu()->GetPayload()->PeekHeader(dataHeader);
-                                if(Mac8Address::ConvertFrom(m_netDevice->GetAddress()) == dataHeader.GetTo()) {
-                                        NS_LOG_DEBUG("Device addr: " << Mac8Address::ConvertFrom(m_netDevice->GetAddress()) << " has received a data packet with id: " << ppdu->GetPsdu()->GetPacketId());
-                                        m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::RX);
-                                        m_netDevice->GetMainRadioPhy()->SetRxPacket(ppdu);
-                                                                        Simulator::Schedule(m_preambleDuration,
-                                                                                &WurCommonPhy::StartRx, this, ppdu,
-                                                                                rxPowerDbm);
-                                }*/
-                                
+                                }           
                         }
                         break;
                 case WurCommonPhyState::OFF:

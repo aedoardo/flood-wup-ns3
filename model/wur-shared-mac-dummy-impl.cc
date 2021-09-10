@@ -65,23 +65,6 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 //to be set as rxOkCallback in wur phy
 void WurSharedMacDummyImpl::OnWurRx(Ptr<Packet> packet) {
 	NS_LOG_FUNCTION_NOARGS();
-	/*FloodWUPPacketHeader header;
-	packet->RemoveHeader(header);
-
-	NS_LOG_DEBUG("Received WakeUp Sequence: " << header.GetWakeUpSequence());*/
-
-	//WurSharedMacDummyImplHeader header;
-	//packet->RemoveHeader(header);
-	//NS_LOG_DEBUG("Received packet data with dst: " << header.GetTo());
-	//NS_LOG_DEBUG("My address: " << Mac8Address::ConvertFrom(GetAddress()) << " my wus: " << m_netDevice->GetWakeUpSequence());
-
-	/*NS_LOG_DEBUG("Packet id received: " << header.m_pid);
-	if(header.GetTo() == Mac8Address::ConvertFrom(GetAddress())) {
-		if(m_state == WurSharedMac::WurSharedMacState::IDLE) {
-			NS_LOG_DEBUG("Start receiving data mechanism.");
-			StartWurRxMechanism();
-		}
-	}*/
 }
 void WurSharedMacDummyImpl::StartDataTx() {
 	GetMainRadioPhy()->TurnOn();
