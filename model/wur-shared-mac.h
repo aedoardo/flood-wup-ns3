@@ -26,6 +26,7 @@ class WurSharedMac : public Object {
 	Ptr<WurCommonPhy> GetWurRadioPhy() const;
         void ReceiveWurPacket(Ptr<WurCommonPsdu> psdu);
         void ReceivedData(Ptr<WurCommonPsdu> psdu);
+        virtual void SetForwardUpCb(Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb);
 
         virtual bool SupportsSendFrom(void) const = 0;
 	//Enqueue packet from upper layer
@@ -92,6 +93,7 @@ class WurSharedMac : public Object {
         TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
         TracedCallback<Ptr<const Packet>> m_macPromiscRxTrace;
         TracedCallback<Ptr<const Packet>> m_macRxTrace;
+        Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forUpcb;
         void Initialize();
 };
 

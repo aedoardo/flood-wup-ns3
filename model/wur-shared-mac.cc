@@ -143,6 +143,10 @@ void WurSharedMac::NotifyTx(Ptr<Packet> packet) {
         m_macTxTrace(packet);
 }
 
+void WurSharedMac::SetForwardUpCb(Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> cb) {
+        m_forUpcb = cb;
+}
+
 void WurSharedMac::ReceiveWurPacket(Ptr<WurCommonPsdu> psdu) {
         FloodWUPPacketHeader header;
         psdu->GetPayload()->PeekHeader(header);

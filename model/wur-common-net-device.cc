@@ -37,6 +37,7 @@ Ptr<Channel> WurCommonNetDevice::GetChannel() const {
 void WurCommonNetDevice::SetReceiveCallback(ReceiveCallback cb) {
 	m_rxCb = cb;
 }
+
 void WurCommonNetDevice::SetPromiscReceiveCallback(
     PromiscReceiveCallback cb) {
 	m_promiscRxCb = cb;
