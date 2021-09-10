@@ -122,14 +122,14 @@ void WurCommonPhy::ChangeState(WurCommonPhy::WurCommonPhyState state) {
         if(m_state != DISABLED)
                 m_state = state;
         
-        if(state == WurCommonPhyState::RX) {
+        /*if(state == WurCommonPhyState::RX) {
             // accendiamo la MAIN ANTENNA
             if(m_netDevice->GetMainRadioPhy()->m_state == WurCommonPhyState::OFF) {
                 NS_LOG_DEBUG("Waking up main radio");
                 m_netDevice->GetMainRadioPhy()->ChangeState(WurCommonPhyState::IDLE);
                 NS_LOG_DEBUG("Device ready to receive data packets.");
             }
-        }      
+        }*/      
         NS_LOG_DEBUG("Final state " << m_state << " device with wus: " << m_netDevice->GetWakeUpSequence() << "");
 }
 

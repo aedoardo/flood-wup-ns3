@@ -166,7 +166,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                 if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
                         NS_LOG_DEBUG("First time that we receive a packet from the sender.");
                         m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
-                        m_netDevice->GetMainRadioPhy()->SetRxOkCallback(MakeCallback(&WurSharedMac::NotifyTx, m_netDevice->GetSharedMac()));
+                        m_netDevice->GetMainRadioPhy()->SetRxOkCallback(MakeCallback(&WurSharedMac::OnDataRx, m_netDevice->GetSharedMac()));
                 } else {
                         NS_LOG_DEBUG("Checking if is a duplicate.");
                         uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
@@ -175,7 +175,7 @@ void WurSharedMac::ReceivedData(Ptr<WurCommonPsdu> psdu) {
                         } else {
                                 m_netDevice->lastPacketReceived.insert({header.GetFrom(), psdu->GetPacketId()});
                                 NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
-                                m_netDevice->GetMainRadioPhy()->SetRxOkCallback(MakeCallback(&WurSharedMac::NotifyTx, m_netDevice->GetSharedMac()));
+                                m_netDevice->GetMainRadioPhy()->SetRxOkCallback(MakeCallback(&WurSharedMac::OnDataRx, m_netDevice->GetSharedMac()));
                         }
                 }
                 m_netDevice->GetMainRadioPhy()->TurnOff();
