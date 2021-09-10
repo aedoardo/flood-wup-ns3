@@ -26,9 +26,9 @@ namespace ns3 {
 			std::vector<Mac16Address> wakeUpSequenceList;
 			int wakeUpSequenceListLength;
 			int currentWakeUpSequence;
-
+			
 		public:
-		
+			virtual void ForwardUp(Ptr<Packet> pkt, uint16_t n, const Mac8Address& addr);
 			void SetWakeUpSequence(Mac16Address wakeUp);
 			uint16_t GetNextPacketId();
 			Mac16Address GetWakeUpSequence();

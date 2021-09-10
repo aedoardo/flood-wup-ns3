@@ -168,6 +168,8 @@ int main(int argc, char** argv) {
         MakeCallback(&WurSharedMac::OnWurTx, receiverMac)
     );
 
+	
+
 	senderNode->AddDevice(senderDevice);
 	receiverNode->AddDevice(receiverDevice);
 

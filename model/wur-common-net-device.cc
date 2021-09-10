@@ -38,6 +38,10 @@ void WurCommonNetDevice::SetReceiveCallback(ReceiveCallback cb) {
 	m_rxCb = cb;
 }
 
+void WurCommonNetDevice::ForwardUp(Ptr<Packet> pkt, uint16_t n, const Mac8Address& addr) {
+	NS_LOG_DEBUG("RECEIVED PACKET AT APPLICATION \n \n \n \n");
+}
+
 void WurCommonNetDevice::SetPromiscReceiveCallback(
     PromiscReceiveCallback cb) {
 	m_promiscRxCb = cb;
