@@ -74,6 +74,7 @@ class WurSharedMac : public Object {
                 SENDING_DATA,
                 RECEIVING_DATA,
         } WurSharedMacState;
+        Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forUpcb;
 
        protected: 
 	Ptr<WurCommonNetDevice> m_netDevice;
@@ -93,7 +94,7 @@ class WurSharedMac : public Object {
         TracedCallback<Ptr<const Packet>> m_macRxDropTrace;
         TracedCallback<Ptr<const Packet>> m_macPromiscRxTrace;
         TracedCallback<Ptr<const Packet>> m_macRxTrace;
-        Callback<void, Ptr<Packet>, uint16_t, const Mac8Address&> m_forUpcb;
+        
         void Initialize();
 };
 

@@ -67,6 +67,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 		if(m_netDevice->GetLastPacketReceived().count(header.GetFrom()) == 0) {
 			m_netDevice->lastPacketReceived.insert({header.GetFrom(), pid});
 			m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
+			m_netDevice->GetSharedMac()->m_forUpcb(packet, 0, header.GetFrom()); // forward to application
 		} else {
 			
 			uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
@@ -76,6 +77,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 					m_netDevice->lastPacketReceived.insert({header.GetFrom(), pid});
 					NS_LOG_DEBUG("Received NEW packet from the sender, updated its value.");
 					m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
+					m_netDevice->GetSharedMac()->m_forUpcb(packet, 0, header.GetFrom()); // forward to application
 			}
 		}
 		m_netDevice->GetMainRadioPhy()->TurnOff();

@@ -51,7 +51,8 @@ void WurCommonNetDevice::SetReceiveCallback(ReceiveCallback cb) {
 }
 
 void WurCommonNetDevice::ForwardUp(Ptr<Packet> pkt, uint16_t n, const Mac8Address& addr) {
-	NS_LOG_DEBUG("RECEIVED PACKET AT APPLICATION \n");
+	NS_LOG_DEBUG("Forwarding packet up to application level.");
+	m_rxCb(this, pkt, 0, addr);
 }
 
 void WurCommonNetDevice::SetPromiscReceiveCallback(
