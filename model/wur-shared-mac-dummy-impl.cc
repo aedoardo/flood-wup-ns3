@@ -55,8 +55,6 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 	// TODO: print packet
 	NS_LOG_FUNCTION_NOARGS();
 	NS_LOG_DEBUG("Receiving data packet");
-	
-
 	WurSharedMacDummyImplHeader header;
        	packet->PeekHeader(header);	
 	NS_LOG_FUNCTION(header.GetFrom() << " " << header.GetTo() << " ");
@@ -69,7 +67,6 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 			m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
 			m_netDevice->GetSharedMac()->m_forUpcb(packet, 0, header.GetFrom()); // forward to application
 		} else {
-			
 			uint16_t lastId = m_netDevice->GetLastPacketReceived().find(header.GetFrom())->second;
 			if(lastId == pid) {
 					NS_LOG_DEBUG("Received packet is a duplicate!");
@@ -79,6 +76,8 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 					m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
 					m_netDevice->GetSharedMac()->m_forUpcb(packet, 0, header.GetFrom()); // forward to application
 			}
+		} else {
+			m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo());
 		}
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
