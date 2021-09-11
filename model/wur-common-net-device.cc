@@ -10,26 +10,38 @@ void WurCommonNetDevice::SetAddress(Address address) {
 	m_mac->SetAddress(address);
 }
 Address WurCommonNetDevice::GetAddress() const { return m_mac->GetAddress(); }
+
 Ptr<WurCommonPhy> WurCommonNetDevice::GetMainRadioPhy() const {
 	return m_mainRadioPhy;
 }
+
 Ptr<WurCommonPhy> WurCommonNetDevice::GetWurRadioPhy() const {
 	return m_wurRadioPhy;
 }
+
 Ptr<WurSharedMac> WurCommonNetDevice::GetSharedMac() const { return m_mac; }
+
 void WurCommonNetDevice::SetMainRadioPhy(Ptr<WurCommonPhy> mainRadioPhy) {
 	m_mainRadioPhy = mainRadioPhy;
 }
+
 void WurCommonNetDevice::SetWurRadioPhy(Ptr<WurCommonPhy> wurRadioPhy) {
 	m_wurRadioPhy = wurRadioPhy;
 }
-void WurCommonNetDevice::SetSharedMac(Ptr<WurSharedMac> mac) { m_mac = mac; }
+
+void WurCommonNetDevice::SetSharedMac(Ptr<WurSharedMac> mac) { 
+	m_mac = mac;
+	m_mac->SetForwardUpCb(MakeCallback(&WurCommonNetDevice::ForwardUp, this)); 
+}
+
 Ptr<WurCommonChannel> WurCommonNetDevice::GetMainRadioChannel() const {
 	return m_mainRadioPhy->GetChannel();
 }
+
 Ptr<WurCommonChannel> WurCommonNetDevice::GetWurRadioChannel() const {
 	return m_wurRadioPhy->GetChannel();
 }
+
 Ptr<Channel> WurCommonNetDevice::GetChannel() const {
 	return m_mainRadioPhy->GetChannel();
 }

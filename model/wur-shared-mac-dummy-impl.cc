@@ -78,10 +78,8 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 					m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
 			}
 		}
-		
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
-		
 	}
 }
 
