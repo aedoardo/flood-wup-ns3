@@ -12,6 +12,7 @@ class WurSharedMacDummyImpl : public WurSharedMac {
         bool SupportsSendFrom(void) const { return true; }
         void StartWurTxMechanismImpl();
         void StartWurRxMechanismImpl();
+        void StartWurTxMechanismImpl(Mac16Address wakeUpSequence);
         void OnDataRx(Ptr<Packet>);
         void OnWurRx(Ptr<Packet>);
         void OnWurTx(Ptr<Packet>);

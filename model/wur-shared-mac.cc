@@ -33,6 +33,30 @@ void WurSharedMac::Enqueue(Ptr<Packet> packet, Address to) {
                 StartWurTxMechanism();
         }
 }
+
+void WurSharedMac::Enqueue(Ptr<Packet> packet, Address to, Mac16Address wakeupSequence) {
+        m_txqueue.push_back(std::make_pair(packet, to));
+        NS_LOG_FUNCTION(packet);
+        NS_LOG_INFO("Packets in queue: " + std::to_string(m_txqueue.size()));
+
+        if (m_state == WurSharedMacState::IDLE) {
+                StartWurTxMechanism(wakeupSequence);
+        }
+}
+
+void WurSharedMac::StartWurTxMechanism(Mac16Address wakeUpSequence) {
+        NS_LOG_FUNCTION("Starting WUR transmitting mechanism");
+        if (GetWurRadioPhy()->GetState() !=
+            WurCommonPhy::WurCommonPhyState::DISABLED) {
+                wurSendingTimer.Schedule(WUR_RX_MECHANISM_TIMEOUT);
+                
+                m_state = WurSharedMacState::WUR_TX_MECHANISM;
+                StartWurTxMechanismImpl(wakeUpSequence);
+        } else 
+                NS_LOG_FUNCTION("Can't start wur mechanism since wur is disabled (out of energy)");
+}
+
+
  
 void WurSharedMac::StartWurTxMechanism() {
         NS_LOG_FUNCTION("Starting WUR transmitting mechanism");

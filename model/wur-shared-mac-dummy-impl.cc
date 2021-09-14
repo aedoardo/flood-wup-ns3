@@ -20,6 +20,27 @@ void WurSharedMacDummyImpl::SetAddress(Address address) {
 
 Address WurSharedMacDummyImpl::GetAddress() const { return m_address; }
 
+void WurSharedMacDummyImpl::StartWurTxMechanismImpl(Mac16Address wakeUpSequence) {
+	NS_LOG_FUNCTION_NOARGS();
+	Ptr<Packet> wurPacket = Create<Packet>();
+
+	// Testing the new WakeUP packet.
+	FloodWUPPacketHeader header;
+	header.SetHeaderWakeUpSequence(wakeUpSequence);
+	wurPacket->AddHeader(header);
+	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
+	psdu->SetPayload(wurPacket);
+	psdu->SetType("wus");
+
+	NS_LOG_FUNCTION(this << "WUR phy state" << GetWurRadioPhy()->GetState());
+	
+
+	if(GetWurRadioPhy()->GetState() == WurCommonPhy::WurCommonPhyState::IDLE) {
+		GetWurRadioPhy()->StartTx(psdu);
+		//waiting for TX ending
+	}
+}
+
 void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 	NS_LOG_FUNCTION_NOARGS();
 	Ptr<Packet> wurPacket = Create<Packet>();
@@ -80,7 +101,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
 	} else {
-		m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo()); // flooding!
+		m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo(), m_netDevice->GetWakeUpSequence()); // flooding!
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 	}
 }

@@ -31,9 +31,12 @@ class WurSharedMac : public Object {
         virtual bool SupportsSendFrom(void) const = 0;
 	//Enqueue packet from upper layer
         virtual void Enqueue(Ptr<Packet> packet, Address to);
+        virtual void Enqueue(Ptr<Packet> packet, Address to, Mac16Address wakeUpSequence);
 	//Starting Wur mechanism for data transmission
 	//Wrapper that starts wur tx timeout timer and invoke true implementation
         void StartWurTxMechanism();
+        void StartWurTxMechanism(Mac16Address wakeUpSequence);
+        virtual void StartWurTxMechanismImpl(Mac16Address wakeUpSequence) = 0;
 	virtual void StartWurTxMechanismImpl() = 0;	
 	//Starting Wur mechanism for data reception
         void StartWurRxMechanism();
