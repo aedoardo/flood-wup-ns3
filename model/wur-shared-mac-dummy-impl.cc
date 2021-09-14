@@ -10,6 +10,7 @@
 #include <iostream>
 #include <sstream>
 #include "flood-wakeup-packet.h"
+#include "ns3/simulator.h"
 
 namespace ns3 {
 NS_LOG_COMPONENT_DEFINE("WurSharedMacDummyImpl");
@@ -102,6 +103,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
 	} else {
 		m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo(), m_netDevice->GetWakeUpSequence()); // flooding!
+		m_netDevice->AdvanceWakeUpSequence(); // aggiorniamo la wake-up sequence.
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 	}
 }
