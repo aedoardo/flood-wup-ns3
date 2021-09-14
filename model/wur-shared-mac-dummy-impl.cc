@@ -26,7 +26,7 @@ void WurSharedMacDummyImpl::StartWurTxMechanismImpl() {
 
 	// Testing the new WakeUP packet.
 	FloodWUPPacketHeader header;
-	header.SetHeaderWakeUpSequence(Mac16Address("00:01"));
+	header.SetHeaderWakeUpSequence(m_netDevice->GetWakeUpSequence());
 	wurPacket->AddHeader(header);
 	Ptr<WurCommonPsdu> psdu = Create<WurCommonPsdu>();
 	psdu->SetPayload(wurPacket);
@@ -76,11 +76,12 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 					m_netDevice->AdvanceWakeUpSequence(); // update the wake up sequence if it is a new packet and it is not a duplicate.
 					m_netDevice->GetSharedMac()->m_forUpcb(packet, 0, header.GetFrom()); // forward to application
 			}
-		} else {
-			m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo());
 		}
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
+	} else {
+		m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo()); // flooding!
+		m_netDevice->GetMainRadioPhy()->TurnOff();
 	}
 }
 
