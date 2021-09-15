@@ -102,6 +102,7 @@ void WurSharedMacDummyImpl::OnDataRx(Ptr<Packet> packet) {
 		m_netDevice->GetMainRadioPhy()->TurnOff();
 		//m_netDevice->GetWurRadioPhy()->TurnOn();
 	} else {
+		//Simulator::ScheduleNow(&WurSharedMac::Enqueue, this, packet, header.GetTo(), m_netDevice->GetWakeUpSequence());
 		m_netDevice->GetSharedMac()->Enqueue(packet, header.GetTo(), m_netDevice->GetWakeUpSequence()); // flooding!
 		m_netDevice->AdvanceWakeUpSequence(); // aggiorniamo la wake-up sequence.
 		m_netDevice->GetMainRadioPhy()->TurnOff();
