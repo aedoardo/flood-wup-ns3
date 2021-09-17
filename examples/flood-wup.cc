@@ -30,14 +30,14 @@
 using namespace ns3;
 //
 int main(int argc, char** argv) {
-	LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_DEBUG);
+    LogComponentEnable("WurCommonNetDevice", LOG_LEVEL_DEBUG);
     LogComponentEnable("WurSharedMac", LOG_LEVEL_ALL);
     LogComponentEnable("WurSharedMacDummyImpl", LOG_LEVEL_ALL);
-	LogComponentEnable("WurCommonPhy", LOG_LEVEL_ALL);
-	LogComponentEnable("WurCommonChannel", LOG_LEVEL_ALL);
-	LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_DEBUG);
-
-	Ptr<Node> senderNode;
+    LogComponentEnable("WurCommonPhy", LOG_LEVEL_ALL);
+    LogComponentEnable("WurCommonChannel", LOG_LEVEL_ALL);
+    LogComponentEnable("FloodWUPPacketHeader", LOG_LEVEL_DEBUG);
+ 
+    Ptr<Node> senderNode;
     Ptr<WurCommonNetDevice> senderDevice;
     Ptr<WurCommonChannel> mainRadioChannel, wakeUpRadioChannel;
     Ptr<WurCommonPhy> senderPhy;
@@ -46,64 +46,64 @@ int main(int argc, char** argv) {
     Ptr<WurSharedMac> senderMac;
     Ptr<PropagationLossModel> lossModel;
     Ptr<PropagationDelayModel> delayModel;
-
+ 
     senderDevice = CreateObject<WurCommonNetDeviceDummyImpl>();
-
+ 
     std::vector<Mac16Address> wakeUpSequenceList;
     Mac16Address t;
     for(int i = 0; i < 30; i++) {
         wakeUpSequenceList.push_back(t.Allocate());
     }
-
+ 
     senderDevice->SetWakeUpSequenceList(wakeUpSequenceList);
     senderNode = CreateObject<Node>();
-
+ 
     mainRadioChannel = CreateObject<WurCommonChannel>();
-	wakeUpRadioChannel = CreateObject<WurCommonChannel>();
-
+    wakeUpRadioChannel = CreateObject<WurCommonChannel>();
+ 
     senderPhy = CreateObject<WurCommonPhyDummyImpl>();
     senderWurPhy = CreateObject<WurCommonPhyDummyImpl>();
-
+ 
     senderMac = CreateObject<WurSharedMacDummyImpl>();
     senderMobility = CreateObject<ConstantPositionMobilityModel>();
-
+ 
     senderMobility->SetPosition(Vector3D(0.0, 0.0, 0.0));
     senderPhy->SetMobility(senderMobility);
     senderWurPhy->SetMobility(senderMobility);
-
+ 
     lossModel = CreateObject<FriisPropagationLossModel>();
-	delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
-
-	mainRadioChannel->SetPropagationLossModel(lossModel);
-	mainRadioChannel->SetPropagationDelayModel(delayModel);
-
-	wakeUpRadioChannel->SetPropagationLossModel(lossModel);
-	wakeUpRadioChannel->SetPropagationDelayModel(delayModel);
-
+    delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
+ 
+    mainRadioChannel->SetPropagationLossModel(lossModel);
+    mainRadioChannel->SetPropagationDelayModel(delayModel);
+ 
+    wakeUpRadioChannel->SetPropagationLossModel(lossModel);
+    wakeUpRadioChannel->SetPropagationDelayModel(delayModel);
+ 
     senderPhy->SetTxGain(0);
-	senderPhy->SetTxPower(20);
-
+    senderPhy->SetTxPower(20);
+ 
     senderPhy->SetRxGain(0);
     senderWurPhy->SetTxGain(0);
-
-	senderWurPhy->SetTxPower(20);
+ 
+    senderWurPhy->SetTxPower(20);
     senderDevice->SetSharedMac(senderMac);
     senderDevice->SetMainRadioPhy(senderPhy);
     senderDevice->SetWurRadioPhy(senderWurPhy);
-
+ 
     mainRadioChannel->Add(senderPhy);
     wakeUpRadioChannel->Add(senderWurPhy);
-
+ 
     senderPhy->SetChannel(mainRadioChannel);
     senderMac->SetNetDevice(senderDevice);
-
+ 
     senderPhy->SetDevice(senderDevice);
     senderWurPhy->SetDevice(senderDevice);
-
+ 
     senderWurPhy->SetChannel(wakeUpRadioChannel);
     
     senderPhy->SetRxOkCallback(
-	    MakeCallback(&WurSharedMac::OnDataRx, senderMac)
+        MakeCallback(&WurSharedMac::OnDataRx, senderMac)
     );
     senderPhy->SetTxOkCallback(
         MakeCallback(&WurSharedMac::NotifyTx, senderMac)
@@ -116,47 +116,102 @@ int main(int argc, char** argv) {
     );
     senderNode->AddDevice(senderDevice);
     senderMac->SetAddress(Mac8Address(senderMac->GetNetDevice()->GetNode()->GetId()));
-
+ 
     std::vector<Ptr<Node>> nodes;
     std::vector<Ptr<WurCommonPhy>> phyNodes;
     std::vector<Ptr<WurCommonPhy>> wurPhyNodes;
     std::vector<Ptr<WurCommonNetDevice>> nodesDevice;
     std::vector<Ptr<MobilityModel>> nodesMobility;
     std::vector<Ptr<WurSharedMac>> nodesMac;
-
+ 
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> distr(0, 50);
-
+ 
+ 
+    PacketSocketHelper pktskth;
+    pktskth.Install(senderNode);
+    PacketSocketAddress socket;
+    socket.SetSingleDevice(senderNode->GetDevice(0)->GetIfIndex());
+ 
+ 
     int numberOfDevice = 30;
     for(int i = 0; i < numberOfDevice; i++) {
-        nodesDevice.push_back(
-            CreateObject<WurCommonNetDeviceDummyImpl>()
-        );
-
-        nodes.push_back(
-            CreateObject<Node>()
-        );
-
-        phyNodes.push_back(
-            CreateObject<WurCommonPhyDummyImpl>()
-        );
-
-        wurPhyNodes.push_back(
-            CreateObject<WurCommonPhyDummyImpl>()
-        );
-
-        nodesMobility.push_back(
-            CreateObject<ConstantPositionMobilityModel>()
-        );
-
-        nodesMac.push_back(
-            CreateObject<WurSharedMacDummyImpl>()
+        
+        Ptr<Node> tmpNode;
+        Ptr<WurCommonNetDevice> tmpDevice;
+        Ptr<WurCommonPhy> tmpPhy;
+        Ptr<WurCommonPhy> tmpWurPhy;
+        Ptr<WurSharedMac> tmpMac;
+        Ptr<MobilityModel> tmpMobility;
+        
+        tmpDevice = CreateObject<WurCommonNetDeviceDummyImpl>();
+        tmpDevice->SetWakeUpSequenceList(wakeUpSequenceList);
+        
+        tmpNode = CreateObject<Node>();
+        
+        tmpPhy = CreateObject<WurCommonPhyDummyImpl>();
+        tmpWurPhy = CreateObject<WurCommonPhyDummyImpl>();
+        
+        tmpMac = CreateObject<WurSharedMacDummyImpl>();
+        tmpMobility = CreateObject<ConstantPositionMobilityModel>();
+        
+        tmpMobility->SetPosition(Vector3D(10.0, 10.0, 10.0));
+        
+        tmpPhy->SetMobility(tmpMobility);
+        tmpWurPhy->SetMobility(tmpMobility);
+        
+        tmpPhy->SetTxGain(0);
+        tmpPhy->SetRxGain(0);
+        tmpPhy->SetRxSensitivity(-70);
+        
+        tmpWurPhy->SetRxGain(0);
+        tmpWurPhy->SetTxPower(20);
+        tmpWurPhy->SetRxSensitivity(-60);
+        tmpWurPhy->SetTxGain(0);
+        
+        tmpDevice->SetSharedMac(tmpMac);
+        tmpDevice->SetMainRadioPhy(tmpPhy);
+        tmpDevice->SetWurRadioPhy(tmpWurPhy);
+        
+        mainRadioChannel->Add(tmpPhy);
+        wakeUpRadioChannel->Add(tmpWurPhy);
+        
+        tmpMac->SetNetDevice(tmpDevice);
+        
+        tmpPhy->SetChannel(mainRadioChannel);
+        tmpPhy->SetDevice(tmpDevice);
+        
+        tmpWurPhy->SetChannel(wakeUpRadioChannel);
+        tmpWurPhy->SetDevice(tmpDevice);
+        
+        tmpPhy->SetRxOkCallback(
+            MakeCallback(&WurSharedMac::OnDataRx, tmpMac)
         );
         
-    }
+        tmpPhy->SetTxOkCallback(
+            MakeCallback(&WurSharedMac::NotifyTx, tmpMac)
+        );
+        
+        tmpWurPhy->SetRxOkCallback(
+            MakeCallback(&WurSharedMac::OnWurRx, tmpMac)
+        );
+        
+        tmpWurPhy->SetTxOkCallback(
+            MakeCallback(&WurSharedMac::OnWurTx, tmpMac)
+        );
+        
+        
+        tmpNode->AddDevice(tmpDevice);
+        
+        tmpMac->SetAddress(Mac8Address(tmpMac->GetNetDevice()->GetNode()->GetId()));
+        socket.SetPhysicalAddress(tmpNode->GetDevice(0)->GetAddress());
 
-    for(int i = 0; i < numberOfDevice; i++) {
+        tmpPhy->TurnOff();
+        tmpWurPhy->TurnOn();
+    }
+ 
+    /*for(int i = 0; i < numberOfDevice; i++) {
         nodesDevice[i]->SetWakeUpSequenceList(wakeUpSequenceList);
         nodesMobility[i]->SetPosition(
             Vector3D(distr(gen), distr(gen), distr(gen))
@@ -177,57 +232,52 @@ int main(int argc, char** argv) {
         phyNodes[i]->SetDevice(nodesDevice[i]);
         wurPhyNodes[i]->SetDevice(nodesDevice[i]);
         wurPhyNodes[i]->SetChannel(wakeUpRadioChannel);
-
+ 
         phyNodes[i]->SetRxOkCallback(
             MakeCallback(&WurSharedMac::OnDataRx, nodesMac[i])
         );
-
+ 
         phyNodes[i]->SetTxOkCallback(
             MakeCallback(&WurSharedMac::NotifyTx, nodesMac[i])
         );
-
+ 
         wurPhyNodes[i]->SetRxOkCallback(
             MakeCallback(&WurSharedMac::OnWurRx, nodesMac[i])
         );
-
+ 
         wurPhyNodes[i]->SetTxOkCallback(
             MakeCallback(&WurSharedMac::OnWurTx, nodesMac[i])
         );
-
+ 
         nodes[i]->AddDevice(nodesDevice[i]);
         nodesMac[i]->SetAddress(Mac8Address(nodesMac[i]->GetNetDevice()->GetNode()->GetId()));
-
-    }
-
-
-    PacketSocketHelper pktskth;
-	pktskth.Install(senderNode);
-	PacketSocketAddress socket;
-	socket.SetSingleDevice(senderNode->GetDevice(0)->GetIfIndex());
-    for(int i = 0; i < numberOfDevice; i++) {
+ 
+    }*/
+ 
+ 
+   
+    /*for(int i = 0; i < numberOfDevice; i++) {
         socket.SetPhysicalAddress(nodes[i]->GetDevice(0)->GetAddress());
-    }
+    }*/
     socket.SetProtocol(0);
-	OnOffHelper onOffHelper("ns3::PacketSocketFactory", Address(socket));
-	onOffHelper.SetConstantRate(DataRate(500), 32);
-	onOffHelper.SetAttribute ("OnTime", 
+    OnOffHelper onOffHelper("ns3::PacketSocketFactory", Address(socket));
+    onOffHelper.SetConstantRate(DataRate(500), 32);
+    onOffHelper.SetAttribute ("OnTime", 
         StringValue("ns3::ConstantRandomVariable[Constant=1]")
     ); 
-	onOffHelper.SetAttribute("OffTime", 
+    onOffHelper.SetAttribute("OffTime", 
         StringValue ("ns3::ConstantRandomVariable[Constant=0]")
     );
-
-	ApplicationContainer apps = onOffHelper.Install(senderNode);
-	apps.Start(Seconds(1.0));
-	apps.Stop(Seconds(9.0));
+ 
+    ApplicationContainer apps = onOffHelper.Install(senderNode);
+    apps.Start(Seconds(1.0));
+    apps.Stop(Seconds(9.0));
     senderPhy->TurnOff();
-	senderWurPhy->TurnOn();
-
+    senderWurPhy->TurnOn();
+ 
     std::cout << "Starting simulation" << std::endl;
-	Simulator::Stop(Seconds(10));
-	Simulator::Run();
-	Simulator::Destroy();
-	std::cout << "End of simulation" << std::endl;
+    Simulator::Stop(Seconds(10));
+    Simulator::Run();
+    Simulator::Destroy();
+    std::cout << "End of simulation" << std::endl;
 }
-
-//

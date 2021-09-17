@@ -56,9 +56,15 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 			NS_LOG_INFO("Found a PHY");
 			//Ptr<MobilityModel> receiverMobility =
 			//    (*i)->GetMobility()->GetObject<MobilityModel>();
-			Ptr<MobilityModel> receiverMobility = (*i)->GetMobility();
+			Ptr<MobilityModel> receiverMobility = (*i)->GetMobility()->GetObject<MobilityModel>();
 
-			NS_LOG_INFO("Receiver Mobility OK!");
+			
+
+			if(receiverMobility) {
+				//NS_LOG_DEBUG("Receiver Mobility OK!");
+			} else {
+				NS_FATAL_ERROR("ReceiverMobility null.");
+			}
 
 			Time delay =
 			    m_delay->GetDelay(senderMobility, receiverMobility);
