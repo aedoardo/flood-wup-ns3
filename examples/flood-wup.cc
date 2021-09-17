@@ -57,36 +57,51 @@ int main(int argc, char** argv) {
 
     senderDevice->SetWakeUpSequenceList(wakeUpSequenceList);
     senderNode = CreateObject<Node>();
+
     mainRadioChannel = CreateObject<WurCommonChannel>();
 	wakeUpRadioChannel = CreateObject<WurCommonChannel>();
+
     senderPhy = CreateObject<WurCommonPhyDummyImpl>();
     senderWurPhy = CreateObject<WurCommonPhyDummyImpl>();
+
     senderMac = CreateObject<WurSharedMacDummyImpl>();
     senderMobility = CreateObject<ConstantPositionMobilityModel>();
+
     senderMobility->SetPosition(Vector3D(0.0, 0.0, 0.0));
     senderPhy->SetMobility(senderMobility);
     senderWurPhy->SetMobility(senderMobility);
+
     lossModel = CreateObject<FriisPropagationLossModel>();
 	delayModel = CreateObject<ConstantSpeedPropagationDelayModel>();
+
 	mainRadioChannel->SetPropagationLossModel(lossModel);
 	mainRadioChannel->SetPropagationDelayModel(delayModel);
+
 	wakeUpRadioChannel->SetPropagationLossModel(lossModel);
 	wakeUpRadioChannel->SetPropagationDelayModel(delayModel);
+
     senderPhy->SetTxGain(0);
 	senderPhy->SetTxPower(20);
+
     senderPhy->SetRxGain(0);
     senderWurPhy->SetTxGain(0);
+
 	senderWurPhy->SetTxPower(20);
     senderDevice->SetSharedMac(senderMac);
     senderDevice->SetMainRadioPhy(senderPhy);
     senderDevice->SetWurRadioPhy(senderWurPhy);
+
     mainRadioChannel->Add(senderPhy);
     wakeUpRadioChannel->Add(senderWurPhy);
+
     senderPhy->SetChannel(mainRadioChannel);
     senderMac->SetNetDevice(senderDevice);
+
     senderPhy->SetDevice(senderDevice);
     senderWurPhy->SetDevice(senderDevice);
+
     senderWurPhy->SetChannel(wakeUpRadioChannel);
+    
     senderPhy->SetRxOkCallback(
 	    MakeCallback(&WurSharedMac::OnDataRx, senderMac)
     );
@@ -114,7 +129,6 @@ int main(int argc, char** argv) {
     std::uniform_int_distribution<> distr(0, 50);
 
     int numberOfDevice = 30;
-
     for(int i = 0; i < numberOfDevice; i++) {
         nodesDevice.push_back(
             CreateObject<WurCommonNetDeviceDummyImpl>()
