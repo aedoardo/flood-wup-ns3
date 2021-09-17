@@ -54,12 +54,15 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 	     i != m_phyList.end(); i++) {
 		if (sender != (*i)) {
 			NS_LOG_INFO("Found a PHY");
-			Ptr<MobilityModel> receiverMobility =
-			    (*i)->GetMobility()->GetObject<MobilityModel>();
+			//Ptr<MobilityModel> receiverMobility =
+			//    (*i)->GetMobility()->GetObject<MobilityModel>();
+			Ptr<MobilityModel> receiverMobility = (*i)->GetMobility();
 
+			NS_LOG_INFO("Receiver Mobility OK!");
 
 			Time delay =
 			    m_delay->GetDelay(senderMobility, receiverMobility);
+
 			double rxPowerDbm = m_loss->CalcRxPower(
 			    txPowerDbm, senderMobility, receiverMobility);
 			/*NS_LOG_DEBUG(
@@ -70,8 +73,10 @@ void WurCommonChannel::Send(Ptr<WurCommonPhy> sender,
 			    << senderMobility->GetDistanceFrom(receiverMobility)
 			    << "m, delay=" << delay);*/
 
+			
 			Ptr<WurCommonPpdu> copy = Copy(ppdu);
 			Ptr<NetDevice> dstNetDevice = (*i)->GetDevice();
+
 
 			//NS_LOG_DEBUG("Sending a packet of type: " << copy->GetPsdu()->GetPacketType());
 
