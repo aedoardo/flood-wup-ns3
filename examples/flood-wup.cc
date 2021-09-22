@@ -135,7 +135,7 @@ int main(int argc, char** argv) {
     socket.SetSingleDevice(senderNode->GetDevice(0)->GetIfIndex());
  
  
-    int numberOfDevice = 30;
+    int numberOfDevice = 3;
     for(int i = 0; i < numberOfDevice; i++) {
         
         Ptr<Node> tmpNode;
@@ -271,7 +271,7 @@ int main(int argc, char** argv) {
  
     ApplicationContainer apps = onOffHelper.Install(senderNode);
     apps.Start(Seconds(1.0));
-    apps.Stop(Seconds(9.0));
+    apps.Stop(Seconds(1.9));
     senderPhy->TurnOff();
     senderWurPhy->TurnOn();
  

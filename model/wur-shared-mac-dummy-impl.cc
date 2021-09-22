@@ -138,7 +138,7 @@ void WurSharedMacDummyImpl::StartDataTx() {
 
 		item = m_txqueue.front();
 		header.SetFrom(GetAddress());
-		header.SetTo(std::get<1>(item)); // fisso ad 1 debug test
+		header.SetTo(std::get<1>(item)); //
 
 		uint16_t pid = m_netDevice->GetNextPacketId();
 		psdu->SetPacketId(pid);
