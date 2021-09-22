@@ -82,9 +82,11 @@ int main(int argc, char** argv) {
  
     senderPhy->SetTxGain(0);
     senderPhy->SetTxPower(20);
+    senderPhy->SetRxSensitivity(-83);
  
     senderPhy->SetRxGain(0);
     senderWurPhy->SetTxGain(0);
+    senderWurPhy->SetRxSensitivity(-83);
  
     senderWurPhy->SetTxPower(20);
     senderDevice->SetSharedMac(senderMac);
@@ -156,18 +158,18 @@ int main(int argc, char** argv) {
         tmpMac = CreateObject<WurSharedMacDummyImpl>();
         tmpMobility = CreateObject<ConstantPositionMobilityModel>();
         
-        tmpMobility->SetPosition(Vector3D(10.0, 10.0, 10.0));
+        tmpMobility->SetPosition(Vector3D(distr(gen), distr(gen), distr(gen)));
         
         tmpPhy->SetMobility(tmpMobility);
         tmpWurPhy->SetMobility(tmpMobility);
         
         tmpPhy->SetTxGain(0);
         tmpPhy->SetRxGain(0);
-        tmpPhy->SetRxSensitivity(-70);
+        tmpPhy->SetRxSensitivity(-83);
         
         tmpWurPhy->SetRxGain(0);
         tmpWurPhy->SetTxPower(20);
-        tmpWurPhy->SetRxSensitivity(-60);
+        tmpWurPhy->SetRxSensitivity(-83);
         tmpWurPhy->SetTxGain(0);
         
         tmpDevice->SetSharedMac(tmpMac);
@@ -211,54 +213,6 @@ int main(int argc, char** argv) {
         tmpWurPhy->TurnOn();
     }
  
-    /*for(int i = 0; i < numberOfDevice; i++) {
-        nodesDevice[i]->SetWakeUpSequenceList(wakeUpSequenceList);
-        nodesMobility[i]->SetPosition(
-            Vector3D(distr(gen), distr(gen), distr(gen))
-        );
-        phyNodes[i]->SetMobility(nodesMobility[i]);
-        phyNodes[i]->SetTxGain(0);
-        phyNodes[i]->SetRxGain(0);
-        phyNodes[i]->SetRxSensitivity(-70);
-        wurPhyNodes[i]->SetRxGain(0);
-        wurPhyNodes[i]->SetRxSensitivity(-60);
-        nodesDevice[i]->SetSharedMac(nodesMac[i]);
-        nodesDevice[i]->SetMainRadioPhy(phyNodes[i]);
-        nodesDevice[i]->SetWurRadioPhy(wurPhyNodes[i]);
-        mainRadioChannel->Add(phyNodes[i]);
-        wakeUpRadioChannel->Add(wurPhyNodes[i]);
-        phyNodes[i]->SetChannel(mainRadioChannel);
-        nodesMac[i]->SetNetDevice(nodesDevice[i]);
-        phyNodes[i]->SetDevice(nodesDevice[i]);
-        wurPhyNodes[i]->SetDevice(nodesDevice[i]);
-        wurPhyNodes[i]->SetChannel(wakeUpRadioChannel);
- 
-        phyNodes[i]->SetRxOkCallback(
-            MakeCallback(&WurSharedMac::OnDataRx, nodesMac[i])
-        );
- 
-        phyNodes[i]->SetTxOkCallback(
-            MakeCallback(&WurSharedMac::NotifyTx, nodesMac[i])
-        );
- 
-        wurPhyNodes[i]->SetRxOkCallback(
-            MakeCallback(&WurSharedMac::OnWurRx, nodesMac[i])
-        );
- 
-        wurPhyNodes[i]->SetTxOkCallback(
-            MakeCallback(&WurSharedMac::OnWurTx, nodesMac[i])
-        );
- 
-        nodes[i]->AddDevice(nodesDevice[i]);
-        nodesMac[i]->SetAddress(Mac8Address(nodesMac[i]->GetNetDevice()->GetNode()->GetId()));
- 
-    }*/
- 
- 
-   
-    /*for(int i = 0; i < numberOfDevice; i++) {
-        socket.SetPhysicalAddress(nodes[i]->GetDevice(0)->GetAddress());
-    }*/
     socket.SetProtocol(0);
     OnOffHelper onOffHelper("ns3::PacketSocketFactory", Address(socket));
     onOffHelper.SetConstantRate(DataRate(500), 32);

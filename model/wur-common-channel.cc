@@ -113,7 +113,7 @@ void WurCommonChannel::Receive(Ptr<WurCommonPhy> receiver,
 	if ((rxPowerDbm + receiver->GetRxGain()) <
 	    receiver->GetRxSensitivity()) {
 		NS_LOG_INFO("Received signal too weak to process: "
-			    << rxPowerDbm << " dBm" << " Sensitivity: " << receiver->GetRxSensitivity());
+			    << rxPowerDbm << " dBm" << " Sensitivity: " << receiver->GetRxSensitivity() << " addr " << Mac8Address::ConvertFrom(receiver->GetDevice()->GetAddress()));
 		return;
 	}
 
