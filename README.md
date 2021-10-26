@@ -1,1 +1,1 @@
-# ns3-wake-up-radio
+# Flood-WUP implementation with NS3
